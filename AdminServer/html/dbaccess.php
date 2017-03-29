@@ -1,12 +1,12 @@
 <?php
  	function query($query)
 	{
-		$database = mysql_connect("localhost","root","goodyear");
+		$database = mysql_connect("localhost","root","systemsynq");
 		if (!$database)
 		{
 			die("Unable to connect to database! </body></html>");
 		}
-		if (!mysql_select_db("project",$database))
+		if (!mysql_select_db("systemsynq",$database))
 		{
 			die("Unable to open database! </body></html>");
 		}

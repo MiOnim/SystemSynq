@@ -1,9 +1,9 @@
 <?php
-  session_start();
-  $password = "password";
-  $salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
-  $salt = sprintf("$2a$%02d$", $cost) . $salt;
-  $hash = crypt($password, $salt);
+//  session_start();
+//  $password = "password";
+//  $salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
+//  $salt = sprintf("$2a$%02d$", $cost) . $salt;
+// $hash = crypt($password, $salt);
  if ($sessionid!=NULL) 
   {
     header("location:./menu.php");
@@ -16,7 +16,8 @@
 
 <head>
   <script src="./common.js"></script>
-  <!-- use cryptoJS to encrypt in javascript<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/aes-min.js"></script>-->
+  <!-- use cryptoJS to encrypt in javascript-->
+ <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/aes-min.js"></script>-->
     <script>
     var xhr = null;
     function verifyPwd()

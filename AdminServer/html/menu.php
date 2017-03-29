@@ -5,7 +5,7 @@
   {
     header("location:./login.php");
   }
-  print $sessionid;
+ // print $sessionid;
 ?>
 
 <!DOCTYPE html>
