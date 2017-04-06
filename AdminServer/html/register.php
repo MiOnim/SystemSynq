@@ -1,6 +1,6 @@
 <?php
 	include("dbaccess.php");
-	$database = mysql_connect("localhost","root", "systemsynq"); // DB connection
+	$database = mysql_connect("localhost","root", "systemsynq17"); // DB connection
 	extract($_POST);
 	//extract($_COOKIE);
         echo $username;

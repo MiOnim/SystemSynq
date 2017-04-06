@@ -1,7 +1,7 @@
 <?php
  	function query($query)
 	{
-		$database = mysql_connect("localhost","root","systemsynq");
+		$database = mysql_connect("localhost","root","systemsynq17");
 		if (!$database)
 		{
 			die("Unable to connect to database! </body></html>");

@@ -2,7 +2,7 @@
  echo "hi ";
  //echo $_POST["uname"];
  	include("dbaccess.php");
-  	$database = mysql_connect("localhost","root", "systemsynq"); // DB connection
+  	$database = mysql_connect("localhost","root", "systemsynq17"); // DB connection
   	extract($_POST);
 	echo $uname;
 	echo $pwd;
