@@ -20,7 +20,7 @@
 	}
 	else
 	{
-	print("Wront password");
+	print("Wrong password");
 	header("location:./login2.html");
 	}
   
