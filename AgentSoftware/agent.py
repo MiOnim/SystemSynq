@@ -1,6 +1,7 @@
 import multiprocessing
 import os
 import wmi
+from wmic import Wmic
 
 wmi_obj = wmi.WMI()
 
@@ -34,15 +35,15 @@ def num_users_loggedon():
 
 
 num_cpu = multiprocessing.cpu_count()
-clock_speed = os.popen("wmic cpu get MaxClockSpeed").read().splitlines()[1]
-cpu_usage = os.popen("wmic cpu get LoadPercentage").read().splitlines()[1]
-ram_total = os.popen("wmic computersystem get TotalPhysicalMemory").read().splitlines()[1]
-ram_free = os.popen("wmic os get FreePhysicalMemory").read().splitlines()[1]
+clock_speed = Wmic("cpu", "MaxClockSpeed").run().get_value()
+cpu_usage = Wmic("cpu", "LoadPercentage").run().get_value()
+ram_total = Wmic("computersystem", "TotalPhysicalMemory").run().get_gigabytes()
+ram_free = Wmic("os", "FreePhysicalMemory").run().get_gigabytes()
 disk_total = get_total_disk_space()
 disk_free = get_free_disk_space()
 
-num_process = os.popen("wmic os get NumberOfProcesses").read().splitlines()[1]
-last_bootup = os.popen("wmic os get LastBootupTime").read().splitlines()[1]
+num_process = Wmic("os", "NumberOfProcesses").run().get_value()
+last_bootup = Wmic("os", "LastBootupTime").run().get_pretty_time()
 last_shutdown = time_last_shutdown()
 
 
@@ -55,4 +56,5 @@ print "Total Disk Space:", disk_total
 print "Free Disk Space:", disk_free
 
 print "Number of Processes:", num_process
+print "Last bootup: ", last_bootup
 print "Last shutdown: ", last_shutdown
