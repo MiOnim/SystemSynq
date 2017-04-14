@@ -1,6 +1,6 @@
 import multiprocessing
-import os
 import wmi
+from datetime import datetime
 from wmic import Wmic
 
 wmi_obj = wmi.WMI()
@@ -33,6 +33,14 @@ def num_users_loggedon():
     list_explorer_owner = wmi_obj.Win32_Process(name='explorer.exe')
     return len(list_explorer_owner) #- 1   #subtract the admin user? 
 
+def pretty_print_time(value):
+    value = value.split('.')[0]
+    try:
+        dt = datetime.strptime(value, "%Y%m%d%H%M%S")
+    except ValueError:
+        return value
+    
+    return dt.strftime("%Y/%m/%d %H:%M:%S")
 
 num_cpu = multiprocessing.cpu_count()
 clock_speed = Wmic("cpu", "MaxClockSpeed").run().get_value()
@@ -43,8 +51,8 @@ disk_total = get_total_disk_space()
 disk_free = get_free_disk_space()
 
 num_process = Wmic("os", "NumberOfProcesses").run().get_value()
-last_bootup = Wmic("os", "LastBootupTime").run().get_pretty_time()
-last_shutdown = time_last_shutdown()
+last_bootup = pretty_print_time(Wmic("os", "LastBootupTime").run().get_value())
+last_shutdown = pretty_print_time(time_last_shutdown())
 
 
 print "Number of CPU:", num_cpu
