@@ -1,3 +1,9 @@
+"""
+This file contains important functions that return various system information
+
+Author: Mazharul Onim
+"""
+
 import multiprocessing
 import wmi
 from datetime import datetime
