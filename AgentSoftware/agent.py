@@ -66,12 +66,12 @@ def pretty_print_time(value):
     
     return dt.strftime("%Y/%m/%d %H:%M:%S")
 
-def threaded_cpu_usage(result):
+def threaded_cpu_usage(dict, key):
     cpu_usage = Wmic("cpu", "LoadPercentage").run().get_value()
     #print "CPU Usage:", cpu_usage
-    result['cpu_usage']=cpu_usage
+    dict[key]=cpu_usage
 
-def threaded_time_last_shutdown(result):
+def threaded_time_last_shutdown(dict, key):
     import pythoncom
     pythoncom.CoInitialize()
     w = wmi.WMI()
@@ -80,7 +80,7 @@ def threaded_time_last_shutdown(result):
         wql_run = w.query(wql)
         last_shutdown = wql_run[0].TimeGenerated
         #return last_shutdown
-        result['last_shutdown'] = last_shutdown
+        dict[key] = last_shutdown
         #print "Last shutdown: ", pretty_print_time(last_shutdown)
     finally:
         pythoncom.CoUninitialize()
@@ -90,10 +90,10 @@ start = time.time()
 
 results={}
 
-thread = Thread(target=threaded_cpu_usage, args=(results,))
+thread = Thread(target=threaded_cpu_usage, args=(results,"cpu_usage"))
 thread.start()
 
-thread2 = Thread(target=threaded_time_last_shutdown, args=(results,))
+thread2 = Thread(target=threaded_time_last_shutdown, args=(results,"last_shutdown"))
 thread2.start()
 
 num_cpu = multiprocessing.cpu_count()
