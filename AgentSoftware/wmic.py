@@ -15,8 +15,8 @@ import os
 class Wmic:
     
     def __init__(self, module, info):
-        self.module = module    #e.g. cpu, os
-        self.info = info        #e.g. MaxClockSpeed, LoadPercentage
+        self.module = module
+        self.info = info
         self.value = ""
         self.cmd = "wmic " + self.module + " get " + self.info
         
