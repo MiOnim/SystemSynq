@@ -12,7 +12,7 @@ Author: Mazharul Onim
 
 import os
 
-class Wmic:
+class CmdWmic:
     
     def __init__(self, module, info):
         self.module = module
