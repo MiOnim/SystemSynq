@@ -3,11 +3,12 @@
   extract($_COOKIE);
   if ($sessionid==NULL) 
   {
-    header("location:./login2.html");
+    header("location:./login.php");
   }
   print $sessionid;
 ?>
 <html>
+<center>
 <style>
 form{ display: inline-block; }
 </style>
@@ -24,5 +25,5 @@ form{ display: inline-block; }
 
 	<area alt="Room 203" title="" href="203.php" shape="poly" coords="203,89,456,88,455,215,202,216" />
 </map>
-
+</center>
 </html>

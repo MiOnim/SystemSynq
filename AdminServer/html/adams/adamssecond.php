@@ -8,6 +8,7 @@
   print $sessionid;
 ?>
 <html>
+<center>
 <style>
 form{ display: inline-block; }
 </style>
@@ -17,6 +18,9 @@ form{ display: inline-block; }
 <form action="./adamsfirst.php">
     <input type="submit" value="1st Floor">
 </form>
+<form action="../logout.php">
+    <input type="submit" value="Logout">
+</form>
 <p></p>
 <img src="https://i.imgur.com/Nwbnfri.png" alt="Adams Hall" usemap="#Map" />
 <map name="Map" id="Map">
@@ -24,5 +28,5 @@ form{ display: inline-block; }
 
 	<area alt="Room 203" title="" href="203.php" shape="poly" coords="203,89,456,88,455,215,202,216" />
 </map>
-
+</center>
 </html>

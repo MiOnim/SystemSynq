@@ -7,8 +7,10 @@
   	extract($_POST);
 	echo $uname;
 	echo $pwd;
+        //$hashed_password = password_hash($pwd,PASSWORD_DEFAULT);
   	$query = "SELECT user FROM users WHERE user='$uname' AND password='$pwd'";
   	$result = query($query);
+	echo $row['password'];
   	if($row=mysql_fetch_row($result)!=false)
 	{
 		$sessionid = rand();
@@ -16,7 +18,6 @@
 		$result = query($str);
 		setcookie("sessionid",$sessionid, time()+60*60*2); // Unique cookie sessionID
 		setcookie("usr",$uname, time()+60*60*2); // Generates unique cookie for the user
-		//print("$sessionid");
 		$_SESSION["sessionid"] = $sessionid;	
 		header("location:./menu.php");
 	}
