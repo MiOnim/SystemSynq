@@ -16,15 +16,15 @@ thread2 = Thread(target=threaded_cpu_usage, args=(thread_result,'cpu_usage'))
 thread2.start()
 
 num_cpu = get_num_cpu()
-clock_speed = CmdWmic("cpu", "MaxClockSpeed").run().get_value()
+clock_speed = CmdWmic("cpu", "MaxClockSpeed").run().get_result()
 ram_total = CmdWmic("computersystem", "TotalPhysicalMemory").run().get_gigabytes()
 ram_free = CmdWmic("os", "FreePhysicalMemory").run().get_gigabytes()
 disk_total = get_total_disk_space()
 disk_free = get_free_disk_space()
 uptime = uptime()
 
-num_process = CmdWmic("os", "NumberOfProcesses").run().get_value()
-last_bootup = pretty_print_time(CmdWmic("os", "LastBootupTime").run().get_value())
+num_process = CmdWmic("os", "NumberOfProcesses").run().get_result()
+last_bootup = pretty_print_time(CmdWmic("os", "LastBootupTime").run().get_result())
 
 thread1.join()
 thread2.join()

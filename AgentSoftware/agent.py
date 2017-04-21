@@ -38,7 +38,7 @@ def list_all_process():
 
 #May not be used. Makes more sense to process on the front-end
 def uptime():
-    last_bootup = CmdWmic("os", "LastBootupTime").run().get_value()
+    last_bootup = CmdWmic("os", "LastBootupTime").run().get_result()
     last_bootup = last_bootup.split('-')[0]
     dt = datetime.strptime(last_bootup, "%Y%m%d%H%M%S.%f")
     now = datetime.now()
@@ -58,31 +58,76 @@ def pretty_print_time(value):
         dt = datetime.strptime(value, "%Y%m%d%H%M%S")
     except ValueError:
         return value
-    
     return dt.strftime("%Y/%m/%d %H:%M:%S")
 
 def cpu_usage():
-    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_value()
+    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
     return cpu_usage
 
 def threaded_cpu_usage(dict, key):
-    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_value()
+    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
     dict[key]=cpu_usage
 
 def last_shutdown():
-    
-    wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
-    wql_run = wmi_obj.query(wql)
-    return wql_run[0].TimeGenerated
+    #wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
+    #wql_run = wmi_obj.query(wql)
+    #return wql_run[0].TimeGenerated
+    last_shutdown = EventViewer('System',code='6006').run().get_time_generated(1)
+    return ''.join(last_shutdown)
     
 def threaded_last_shutdown(dict, key):
     import pythoncom
     pythoncom.CoInitialize()
     w = wmi.WMI()
     try:
-        wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
-        wql_run = w.query(wql)
-        last_shutdown = wql_run[0].TimeGenerated
-        dict[key] = pretty_print_time(last_shutdown)
+        #wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
+        #wql_run = w.query(wql)
+        #last_shutdown = wql_run[0].TimeGenerated
+        last_shutdown = EventViewer('System',code='6006',wmi=w).run().get_time_generated(1)
+        dict[key] = pretty_print_time(''.join(last_shutdown))
     finally:
         pythoncom.CoUninitialize()
+
+
+
+class EventViewer:
+    
+    def __init__(self, logfile, code="", type="", wmi=None):
+        self.logfile = logfile
+        self.eventcode = code
+        self.type = type
+        self.message = ""
+        self.time_generated = ""
+        self.query_str = self.build_query_string()
+        self.result = []
+        self.wmi = wmi or wmi_obj
+    
+    def run(self):
+        self.result = self.wmi.query(self.query_str)
+        return self
+    
+    def build_query_string(self):
+        query_str = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='" + self.logfile + "'"
+        if self.type:
+            query_str += " AND Type='" + self.type + "'"
+        if self.eventcode:
+            query_str += " AND EventCode='" + self.eventcode + "'"
+        return query_str
+    
+    def get_message(self, n):
+        return [self.result[x].Message for x in range(n)]
+    
+    def get_logfile(self, n):
+        return [self.LogFile[x].Message for x in range(n)]
+    
+    def get_type(self, n):
+        return [self.result[x].Type for x in range(n)]
+    
+    def get_eventcode(self, n):
+        return [self.result[x].EventCode for x in range(n)]
+    
+    def get_time_generated(self, n):
+        return [self.result[x].TimeGenerated for x in range(n)]
+    
+    def get_query_string(self):
+        return self.query_str
