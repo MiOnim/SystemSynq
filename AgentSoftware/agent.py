@@ -1,20 +1,24 @@
 """
-This file contains important functions that return various system
+This file contains functions that return various system
 information using Python's WMI module
 
-Author: Mazharul Onim
+It also includes EventViewer class, which encapsulates querying 
+Windows Event Viewer, and getting results from it.
+
 """
+
+__author__ = "Mazharul Onim"
 
 import multiprocessing
 import os
 import re
 import wmi
 import socket
-from uuid import getnode
 from datetime import datetime
+from uuid import getnode
 from threading import Thread
 from multiprocessing.pool import ThreadPool
-from wmic import CmdWmic
+from wmic import *
 
 wmi_obj = wmi.WMI()
 
@@ -55,14 +59,6 @@ def num_users_loggedon():
     list_explorer_owner = wmi_obj.Win32_Process(name='explorer.exe')
     return len(list_explorer_owner) #- 1   #subtract the admin user? 
 
-def pretty_print_time(value):
-    value = value.split('.')[0]
-    try:
-        dt = datetime.strptime(value, "%Y%m%d%H%M%S")
-    except ValueError:
-        return value
-    return dt.strftime("%Y/%m/%d %H:%M:%S")
-
 def cpu_usage():
     cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
     return cpu_usage
@@ -81,7 +77,7 @@ def threaded_last_shutdown(dict, key):
     w = wmi.WMI()
     try:
         last_shutdown = EventViewer('System',code='6006',wmi=w).run().get_time_generated(1)
-        dict[key] = pretty_print_time(''.join(last_shutdown))
+        dict[key] = ''.join(last_shutdown)
     finally:
         pythoncom.CoUninitialize()
 
@@ -90,7 +86,7 @@ def total_available_memory(dict, key):
     for line in system_info.split("\n"):
         if "Available Physical Memory" in line:
             x = line
-    
+    #extract the value and convert to GB:
     available_ram = "".join(re.findall(r'\d+,?\d+', x)).replace(',', '')
     in_gb = float(available_ram)/1024
     dict[key] = str(round(in_gb, 2)) + " GB"
@@ -104,7 +100,16 @@ def get_mac():
     return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
 
+"""
+The instance variables are:
+    self.logfile   - the logfile to query from e.g. 'System', 'Application'
+    self.eventcode - the 'EventID' field in Event Viewer
+    self.type      - the 'level' field in Event Viewer e.g. 'Error', 'Information'
+    self.query_str - the query string to be executed
+    self.result    - a list of the results from the query
+    self.wmi       - the WMI object. Default value is wmi_obj instantiated on top
 
+"""
 class EventViewer:
     
     def __init__(self, logfile, code="", type="", wmi=None):

@@ -1,7 +1,15 @@
+"""
+This file collects the necessary data and sends over to the server
+
+"""
+
+__author__ = "Mazharul Onim"
+
 import time
 from threading import Thread
-from wmic import CmdWmic
+from wmic import *
 from agent import *
+from utils import *
 
 start=time.time()
 
@@ -39,7 +47,7 @@ thread1.join()
 thread2.join()
 thread3.join()
 cpu_usage = thread_result['cpu_usage']
-last_shutdown = thread_result['last_shutdown']
+last_shutdown = pretty_print_time(thread_result['last_shutdown'])
 ram_free = thread_result['ram_available']
 
 print "IP address:", ip
