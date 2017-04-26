@@ -6,6 +6,7 @@ Author: Mazharul Onim
 """
 
 import multiprocessing
+import os
 import wmi
 import socket
 from uuid import getnode
@@ -82,6 +83,13 @@ def threaded_last_shutdown(dict, key):
         dict[key] = pretty_print_time(''.join(last_shutdown))
     finally:
         pythoncom.CoUninitialize()
+
+def total_available_memory(dict, key):
+    system_info = os.popen("systeminfo").read()
+    for line in system_info.split("\n"):
+        if "Available Physical Memory" in line:
+            x = line
+    dict[key] = x.split(': ')[1]
 
 def get_ip():
     hostname = socket.gethostname()
