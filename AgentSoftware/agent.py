@@ -7,7 +7,8 @@ Author: Mazharul Onim
 
 import multiprocessing
 import wmi
-import time
+import socket
+from uuid import getnode
 from datetime import datetime
 from threading import Thread
 from multiprocessing.pool import ThreadPool
@@ -15,7 +16,7 @@ from wmic import CmdWmic
 
 wmi_obj = wmi.WMI()
 
-def get_num_cpu():
+def get_num_cores():
     return multiprocessing.cpu_count()
 
 def get_total_disk_space():
@@ -69,9 +70,6 @@ def threaded_cpu_usage(dict, key):
     dict[key]=cpu_usage
 
 def last_shutdown():
-    #wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
-    #wql_run = wmi_obj.query(wql)
-    #return wql_run[0].TimeGenerated
     last_shutdown = EventViewer('System',code='6006').run().get_time_generated(1)
     return ''.join(last_shutdown)
     
@@ -80,13 +78,18 @@ def threaded_last_shutdown(dict, key):
     pythoncom.CoInitialize()
     w = wmi.WMI()
     try:
-        #wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
-        #wql_run = w.query(wql)
-        #last_shutdown = wql_run[0].TimeGenerated
         last_shutdown = EventViewer('System',code='6006',wmi=w).run().get_time_generated(1)
         dict[key] = pretty_print_time(''.join(last_shutdown))
     finally:
         pythoncom.CoUninitialize()
+
+def get_ip():
+    hostname = socket.gethostname()
+    return socket.gethostbyname(hostname)
+
+def get_mac():
+    mac = getnode()    #returns decimal value of the mac address
+    return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
 
 
@@ -96,8 +99,6 @@ class EventViewer:
         self.logfile = logfile
         self.eventcode = code
         self.type = type
-        self.message = ""
-        self.time_generated = ""
         self.query_str = self.build_query_string()
         self.result = []
         self.wmi = wmi or wmi_obj
@@ -117,8 +118,8 @@ class EventViewer:
     def get_message(self, n):
         return [self.result[x].Message for x in range(n)]
     
-    def get_logfile(self, n):
-        return [self.LogFile[x].Message for x in range(n)]
+    def get_logfile(self):
+        return self.logfile
     
     def get_type(self, n):
         return [self.result[x].Type for x in range(n)]
