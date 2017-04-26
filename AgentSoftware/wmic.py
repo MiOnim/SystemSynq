@@ -34,7 +34,7 @@ class CmdWmic:
         except ValueError:
             return self.result
         
-        kilo = int_value/1024
+        kilo = int_value/1024.0   #added .0 to do float division
         return str(round(kilo, 3)) + " KB"
         
     def get_megabytes(self):

@@ -7,6 +7,7 @@ Author: Mazharul Onim
 
 import multiprocessing
 import os
+import re
 import wmi
 import socket
 from uuid import getnode
@@ -89,7 +90,10 @@ def total_available_memory(dict, key):
     for line in system_info.split("\n"):
         if "Available Physical Memory" in line:
             x = line
-    dict[key] = x.split(': ')[1]
+    
+    available_ram = "".join(re.findall(r'\d+,?\d+', x)).replace(',', '')
+    in_gb = float(available_ram)/1024
+    dict[key] = str(round(in_gb, 2)) + " GB"
 
 def get_ip():
     hostname = socket.gethostname()
