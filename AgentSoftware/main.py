@@ -50,23 +50,15 @@ cpu_usage = thread_result['cpu_usage']
 last_shutdown = pretty_print_time(thread_result['last_shutdown'])
 ram_free = thread_result['ram_available']
 
-print "IP address:", ip
-print "MAC address:", mac
-print "Windows Version:", windows
-print "Architecture:", architecture
-print "Number of CPU cores:", num_cores
-print "Clock Speed:", clock_speed
-print "CPU Usage:", cpu_usage
-print "Total RAM:", ram_total
-print "Available RAM:", ram_free
-print "Maximum RAM capacity:", ram_max_capacity
-print "Total Disk Space:", disk_total
-print "Free Disk Space:", disk_free
-print "Uptime:", uptime
-
-print "Number of Processes:", num_process
-print "Last bootup: ", last_bootup
-print "Last shutdown: ", last_shutdown
+print_args(ip=ip, mac=mac, windows=windows, architecture=architecture,
+           num_cores=num_cores, clock_speed=clock_speed, cpu_usage=cpu_usage,
+           ram_total=ram_total, ram_free=ram_free, ram_max_capacity=ram_max_capacity,
+           disk_total=disk_total, disk_free=disk_free, uptime=uptime,
+           num_process=num_process, last_bootup=last_bootup,
+           last_shutdown=last_shutdown)
 
 end=time.time()
 print end-start
+
+#test = EventViewer('System',type='error').run().serialize()
+#write_to_file(test, ".\\events\\")

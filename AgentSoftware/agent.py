@@ -19,6 +19,7 @@ from uuid import getnode
 from threading import Thread
 from multiprocessing.pool import ThreadPool
 from wmic import *
+from utils import *
 
 wmi_obj = wmi.WMI()
 
@@ -108,6 +109,7 @@ The instance variables are:
     self.query_str - the query string to be executed
     self.result    - a list of the results from the query
     self.wmi       - the WMI object. Default value is wmi_obj instantiated on top
+    self.qtime     - the time of query; to display in the UI
 
 """
 class EventViewer:
@@ -119,9 +121,11 @@ class EventViewer:
         self.query_str = self.build_query_string()
         self.result = []
         self.wmi = wmi or wmi_obj
+        self.qtime = ""
     
     def run(self):
         self.result = self.wmi.query(self.query_str)
+        self.qtime = current_datetime()
         return self
     
     def build_query_string(self):
@@ -131,6 +135,18 @@ class EventViewer:
         if self.eventcode:
             query_str += " AND EventCode='" + self.eventcode + "'"
         return query_str
+    
+    def serialize(self):
+        ret = "Last Updated: " + self.qtime + "\n"
+        ret += "Log File,Level,Time Generated, Event ID, Message" + "\n"
+        for item in self.result:
+            ret += str(item.Logfile) + ","   #convert all of them to string because
+            ret += str(item.Type) + ","      #some of the values are of None type
+            ret += str(item.TimeGenerated) + ","
+            ret += str(item.EventCode) + ","
+            ret += str(item.Message) + ","
+            ret += "\n"
+        return ret
     
     def get_message(self, n):
         return [self.result[x].Message for x in range(n)]
