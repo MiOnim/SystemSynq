@@ -34,7 +34,7 @@ def write_to_file(string, filepath):
             raise OSError("Failed to create directory")
     filename = 'events_{}.txt'.format(datetime.now().strftime("%Y%m%d%H%M%S"))
     filepath = filepath + filename
-    print "writing to file:", os.path.abspath(filepath)
+    print "Writing Windows Events to file:", os.path.abspath(filepath)
     with open(filepath, 'w') as f:
         f.write(string)
         

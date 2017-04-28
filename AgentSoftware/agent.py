@@ -92,9 +92,11 @@ def total_available_memory(dict, key):
     in_gb = float(available_ram)/1024
     dict[key] = str(round(in_gb, 2)) + " GB"
 
+def get_hostname():
+    return socket.gethostname()
+    
 def get_ip():
-    hostname = socket.gethostname()
-    return socket.gethostbyname(hostname)
+    return socket.gethostbyname(get_hostname())
 
 def get_mac():
     mac = getnode()    #returns decimal value of the mac address
@@ -142,7 +144,7 @@ class EventViewer:
         for item in self.result:
             ret += str(item.Logfile) + ","   #convert all of them to string because
             ret += str(item.Type) + ","      #some of the values are of None type
-            ret += str(item.TimeGenerated) + ","
+            ret += pretty_print_time(str(item.TimeGenerated)) + ","
             ret += str(item.EventCode) + ","
             ret += str(item.Message) + ","
             ret += "\n"

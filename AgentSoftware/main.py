@@ -10,6 +10,7 @@ from threading import Thread
 from wmic import *
 from agent import *
 from utils import *
+from db import *
 
 start=time.time()
 
@@ -27,6 +28,7 @@ thread2.start()
 thread3 = Thread(target=threaded_cpu_usage, args=(thread_result,'cpu_usage'))
 thread3.start()
 
+name = get_hostname()
 windows = CmdWmic("os", "Caption").run().get_result()
 architecture = CmdWmic("os", "OSArchitecture").run().get_result()
 num_cores = get_num_cores()
@@ -50,12 +52,15 @@ cpu_usage = thread_result['cpu_usage']
 last_shutdown = pretty_print_time(thread_result['last_shutdown'])
 ram_free = thread_result['ram_available']
 
-print_args(ip=ip, mac=mac, windows=windows, architecture=architecture,
+print_args(name=name, ip=ip, mac=mac, windows=windows, architecture=architecture,
            num_cores=num_cores, clock_speed=clock_speed, cpu_usage=cpu_usage,
            ram_total=ram_total, ram_free=ram_free, ram_max_capacity=ram_max_capacity,
            disk_total=disk_total, disk_free=disk_free, uptime=uptime,
            num_process=num_process, last_bootup=last_bootup,
            last_shutdown=last_shutdown)
+
+#db = Db()
+#db.update_network(name, uptime, last_shutdown, "", "", "")
 
 end=time.time()
 print end-start
