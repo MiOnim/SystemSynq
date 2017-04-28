@@ -35,12 +35,12 @@ num_cores = get_num_cores()
 clock_speed = CmdWmic("cpu", "MaxClockSpeed").run().get_result()
 ram_total = CmdWmic("computersystem", "TotalPhysicalMemory").run().get_gigabytes()
 ram_free = CmdWmic("os", "FreePhysicalMemory").run().get_gigabytes()
-ram_max_capacity = CmdWmic("memphysical", "MaxCapacity").run().get_gigabytes()
 disk_total = get_total_disk_space()
 disk_free = get_free_disk_space()
 uptime = uptime()
 ip = get_ip()
 mac = get_mac()
+processes = list_all_process()
 
 num_process = CmdWmic("os", "NumberOfProcesses").run().get_result()
 last_bootup = pretty_print_time(CmdWmic("os", "LastBootupTime").run().get_result())
@@ -54,13 +54,14 @@ ram_free = thread_result['ram_available']
 
 print_args(name=name, ip=ip, mac=mac, windows=windows, architecture=architecture,
            num_cores=num_cores, clock_speed=clock_speed, cpu_usage=cpu_usage,
-           ram_total=ram_total, ram_free=ram_free, ram_max_capacity=ram_max_capacity,
+           ram_total=ram_total, ram_free=ram_free, processes=processes,
            disk_total=disk_total, disk_free=disk_free, uptime=uptime,
            num_process=num_process, last_bootup=last_bootup,
            last_shutdown=last_shutdown)
 
 #db = Db()
 #db.update_network(name, uptime, last_shutdown, "", "", "")
+#db.insert_into_hardwaresoftware(name, num_cores, clock_speed, "", cpu_usage, ram_total, ram_free, disk_total, disk_free, processes)
 
 end=time.time()
 print end-start
