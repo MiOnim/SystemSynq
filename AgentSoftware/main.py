@@ -67,4 +67,5 @@ end=time.time()
 print end-start
 
 #test = EventViewer('System',type='error').run().serialize()
-#write_to_file(test, ".\\events\\")
+#filename = write_to_file(test, ".\\events\\")
+#upload_file_to_server(filename)
