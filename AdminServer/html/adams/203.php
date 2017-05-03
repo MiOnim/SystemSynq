@@ -67,27 +67,6 @@ function mysql_query_or_die($query) {
         $total_computers += 1;
     }
     $average_uptime = ($total_uptime/$total_computers);
-    // Retrieve Notifications
-    $query = "SELECT * FROM Notifications WHERE ID='".$process_id."'";
-    $result = mysql_query_or_die($query);
-    while($row = mysql_fetch_array($result))
-    {
-       echo $row['Name'];
-       echo "<br>";
-       echo "<b>Notifications: </b>";
-       echo "<br>";
-       $process_array = explode(',',$row['Notifications']);
-       echo "<td>";
-       foreach($process_array as $key=> $value)
-       {
-           echo $value;
-           echo "<br>";
-       }
-       echo "<br>";
-       echo "<b>Uptime: </b>";
-       echo "<br>";
-       echo $row['Uptime'];  
-    }
     echo "</left>";
     echo "<br><br>";
     echo "<center>";
@@ -96,6 +75,30 @@ function mysql_query_or_die($query) {
     echo "</center>";
     die();
   }
+  // notifications?=ID
+  if (isset($_GET['notifications'])) {
+    $notif_id = $_GET['notifications'];
+    $connection = mysql_connect('localhost','root','systemsynq17');
+    mysql_select_db('systemsynq');
+    $query = "SELECT * FROM Notifications WHERE ID='" . $notif_id."'";
+    $result = mysql_query_or_die($query);
+    while($row = mysql_fetch_array($result))
+    {
+      echo "<b>Name: </b><br>";
+      echo "Adams-20300".$row['ID']."<br><br>";
+      echo "<b>Notifications: </b><br>";
+      $notification_array = explode(',',$row['Notifications']);
+      //print_r($notification_array);
+      echo "<td>";
+      foreach ($notification_array as $item)
+      {
+          echo $item;
+          echo "<br>";
+      }
+    } 
+    die(); 
+  }
+
   // comp?=ID
   if (isset($_GET['comp'])) {
     $comp_id = $_GET['comp'];
@@ -180,7 +183,22 @@ function mysql_query_or_die($query) {
   {
      echo "<tr>";
      echo "<td><a href='203.php?comp=".$row['ID']."'>".$row['ID']."</a></td>";
-     echo "<td>" . (strlen($row['Notifications']) > 25 ? substr($row['Notifications'],0,25)."..." : $row['Notifications']). "</td>";
+     $notif_array = explode(',',$row['Notifications']);
+     echo "<td>";
+     if (count($notif_array) >= 2)
+     {
+         foreach(array_slice($notif_array,0,2) as $item)
+         {
+             echo $item."<br>";
+         }
+         echo "<a href='203.php?notifications=".$row['ID']."'>Click to view all notifications</a></td>";
+     }
+     else 
+     {
+         echo $row['Notifications'];
+     }
+     //echo "<td>" . (strlen($row['Notifications']) > 25 ? substr($row['Notifications'],0,25)."..." : $row['Notifications']) . "<br>"; 
+     //echo "<a href='203.php?notifications=".$row['ID']."'>Click to view all notifications</a>";
      echo "<td>" . $row['Uptime']. "</td>";
   }
   echo "</table>";
