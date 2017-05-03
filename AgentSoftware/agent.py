@@ -1,9 +1,30 @@
+"""
+This file contains functions that return various system
+information using Python's WMI module
+
+It also includes EventViewer class, which encapsulates querying 
+Windows Event Viewer, and getting results from it.
+
+"""
+
+__author__ = "Mazharul Onim"
+
 import multiprocessing
 import os
+import re
 import wmi
+import socket
+from datetime import datetime
+from uuid import getnode
+from threading import Thread
+from multiprocessing.pool import ThreadPool
+from wmic import *
+from utils import *
 
 wmi_obj = wmi.WMI()
 
+def get_num_cores():
+    return multiprocessing.cpu_count()
 
 def get_total_disk_space():
     total = 0
@@ -23,36 +44,126 @@ def list_all_process():
         processes += p.Name + ","
     return processes[:-1]  #to remove the last comma
 
-def time_last_shutdown():
-    wql = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='System' AND EventCode='6006'"
-    wql_run = wmi_obj.query(wql)
-    return wql_run[0].TimeGenerated
+#May not be used. Makes more sense to process on the front-end
+def uptime():
+    last_bootup = CmdWmic("os", "LastBootupTime").run().get_result()
+    last_bootup = last_bootup.split('-')[0]
+    dt = datetime.strptime(last_bootup, "%Y%m%d%H%M%S.%f")
+    now = datetime.now()
+    time_diff = now - dt
+    days = time_diff.days
+    hours = time_diff.seconds / 3600
+    minutes = (time_diff.seconds / 60)%60
+    return "%s days, %s hours, %s minutes" % (days, hours, minutes)
 
 def num_users_loggedon():
     list_explorer_owner = wmi_obj.Win32_Process(name='explorer.exe')
     return len(list_explorer_owner) #- 1   #subtract the admin user? 
 
+def cpu_usage():
+    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
+    return cpu_usage
 
-num_cpu = multiprocessing.cpu_count()
-clock_speed = os.popen("wmic cpu get MaxClockSpeed").read().splitlines()[1]
-cpu_usage = os.popen("wmic cpu get LoadPercentage").read().splitlines()[1]
-ram_total = os.popen("wmic computersystem get TotalPhysicalMemory").read().splitlines()[1]
-ram_free = os.popen("wmic os get FreePhysicalMemory").read().splitlines()[1]
-disk_total = get_total_disk_space()
-disk_free = get_free_disk_space()
+def threaded_cpu_usage(dict, key):
+    cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
+    dict[key]=cpu_usage
 
-num_process = os.popen("wmic os get NumberOfProcesses").read().splitlines()[1]
-last_bootup = os.popen("wmic os get LastBootupTime").read().splitlines()[1]
-last_shutdown = time_last_shutdown()
+def last_shutdown():
+    last_shutdown = EventViewer('System',code='6006').run().get_time_generated(1)
+    return ''.join(last_shutdown)
+    
+def threaded_last_shutdown(dict, key):
+    import pythoncom
+    pythoncom.CoInitialize()
+    w = wmi.WMI()
+    try:
+        last_shutdown = EventViewer('System',code='6006',wmi=w).run().get_time_generated(1)
+        dict[key] = ''.join(last_shutdown)
+    finally:
+        pythoncom.CoUninitialize()
+
+def total_available_memory(dict, key):
+    system_info = os.popen("systeminfo").read()
+    for line in system_info.split("\n"):
+        if "Available Physical Memory" in line:
+            x = line
+    #extract the value and convert to GB:
+    available_ram = "".join(re.findall(r'\d+,?\d+', x)).replace(',', '')
+    in_gb = float(available_ram)/1024
+    dict[key] = str(round(in_gb, 2)) + " GB"
+
+def get_hostname():
+    return socket.gethostname()
+    
+def get_ip():
+    return socket.gethostbyname(get_hostname())
+
+def get_mac():
+    mac = getnode()    #returns decimal value of the mac address
+    return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
 
-print "Number of CPU:", num_cpu
-print "Clock Speed:", clock_speed
-print "CPU Usage:", cpu_usage
-print "Total RAM:", ram_total
-print "Free RAM:", ram_free
-print "Total Disk Space:", disk_total
-print "Free Disk Space:", disk_free
+"""
+The instance variables are:
+    self.logfile   - the logfile to query from e.g. 'System', 'Application'
+    self.eventcode - the 'EventID' field in Event Viewer
+    self.type      - the 'level' field in Event Viewer e.g. 'Error', 'Information'
+    self.query_str - the query string to be executed
+    self.result    - a list of the results from the query
+    self.wmi       - the WMI object. Default value is wmi_obj instantiated on top
+    self.qtime     - the time of query; to display in the UI
 
-print "Number of Processes:", num_process
-print "Last shutdown: ", last_shutdown
+"""
+class EventViewer:
+    
+    def __init__(self, logfile, code="", type="", wmi=None):
+        self.logfile = logfile
+        self.eventcode = code
+        self.type = type
+        self.query_str = self.build_query_string()
+        self.result = []
+        self.wmi = wmi or wmi_obj
+        self.qtime = ""
+    
+    def run(self):
+        self.result = self.wmi.query(self.query_str)
+        self.qtime = current_datetime()
+        return self
+    
+    def build_query_string(self):
+        query_str = "SELECT * FROM Win32_NTLogEvent WHERE LogFile='" + self.logfile + "'"
+        if self.type:
+            query_str += " AND Type='" + self.type + "'"
+        if self.eventcode:
+            query_str += " AND EventCode='" + self.eventcode + "'"
+        return query_str
+    
+    def serialize(self):
+        ret = "Last Updated: " + self.qtime + "\n"
+        ret += "Log File,Level,Time Generated, Event ID, Message" + "\n"
+        for item in self.result:
+            ret += str(item.Logfile) + ","   #convert all of them to string because
+            ret += str(item.Type) + ","      #some of the values are of None type
+            ret += pretty_print_time(str(item.TimeGenerated)) + ","
+            ret += str(item.EventCode) + ","
+            ret += str(item.Message) + ","
+            ret += "\n"
+        return ret
+    
+    def get_message(self, n):
+        return [self.result[x].Message for x in range(n)]
+    
+    def get_logfile(self):
+        return self.logfile
+    
+    def get_type(self, n):
+        return [self.result[x].Type for x in range(n)]
+    
+    def get_eventcode(self, n):
+        return [self.result[x].EventCode for x in range(n)]
+    
+    def get_time_generated(self, n):
+        return [self.result[x].TimeGenerated for x in range(n)]
+    
+    def get_query_string(self):
+        return self.query_str
