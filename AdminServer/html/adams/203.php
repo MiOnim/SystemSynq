@@ -21,8 +21,6 @@ form{ display: inline-block; }
   {
     header("location:../login2.html");
   }
-  print $sessionid;
-  //print basename(getcwd());
 
 function mysql_query_or_die($query) {
     $result = mysql_query($query);
@@ -33,74 +31,137 @@ function mysql_query_or_die($query) {
         die("<br>{$query}<br>*** {$err} ***<br>");
     }
 }
-
+  // processes?=ID
+  if (isset($_GET['processes'])){
+    $process_id = $_GET['processes'];
+    $connection = mysql_connect('localhost','root','systemsynq17');
+    mysql_select_db('systemsynq');
+    echo "<left>";
+    $query = "SELECT * FROM HardwareSoftware WHERE ID='".$process_id."'";
+    $result = mysql_query_or_die($query);
+    echo "<b>Name: </b>";
+    while($row = mysql_fetch_array($result))
+    {
+       echo $row['Name'];
+       echo "<br><br><br>";
+       echo "<b>Processes: </b>";
+       echo "<br>";
+       $process_array = explode(',',$row['Processes_Unusual']);
+       echo "<td>";
+       $number_of_processes = 0;
+       foreach($process_array as $key=> $value)
+       {
+           echo $value;
+           $number_of_processes += 1;
+           echo "<br>";
+       }
+    }
+    // Average Uptime
+    $query = "SELECT * FROM Notifications";
+    $result = mysql_query_or_die($query);
+    $total_uptime = 0;
+    $total_computers = 0;
+    while($row = mysql_fetch_array($result))
+    {
+        $total_uptime += $row['Uptime'];
+        $total_computers += 1;
+    }
+    $average_uptime = ($total_uptime/$total_computers);
+    // Retrieve Notifications
+    $query = "SELECT * FROM Notifications WHERE ID='".$process_id."'";
+    $result = mysql_query_or_die($query);
+    while($row = mysql_fetch_array($result))
+    {
+       echo $row['Name'];
+       echo "<br>";
+       echo "<b>Notifications: </b>";
+       echo "<br>";
+       $process_array = explode(',',$row['Notifications']);
+       echo "<td>";
+       foreach($process_array as $key=> $value)
+       {
+           echo $value;
+           echo "<br>";
+       }
+       echo "<br>";
+       echo "<b>Uptime: </b>";
+       echo "<br>";
+       echo $row['Uptime'];  
+    }
+    echo "</left>";
+    echo "<br><br>";
+    echo "<center>";
+    echo "Total number of processes: " . $number_of_processes . "<br>";
+    echo "Average uptime in this room: ". round($average_uptime,2) . " hours";
+    echo "</center>";
+    die();
+  }
+  // comp?=ID
   if (isset($_GET['comp'])) {
     $comp_id = $_GET['comp'];
     $connection = mysql_connect('localhost','root','systemsynq17');
     mysql_select_db('systemsynq');
+    echo "<center>
+    <table border='1'>
+    <div id = CenterTableText>
+    <tr>
+    <th>Name</th>
+    <th>CPU Usage</th>
+    <th>Free RAM</th>
+    <th>Free DISK</th>
+    <th>Total Processes</th>
+    <th>All Processes</th>
+    </tr>";
+    $noteconnection = mysql_connect('localhost','root','systemsynq17');
+    mysql_select_db('systemsynq');
     $query = "SELECT * FROM HardwareSoftware WHERE ID='".$comp_id."'";
     $result = mysql_query_or_die($query);
-    echo("<table>");
-    $first_row = true;
-    while ($row = mysql_fetch_assoc($result)) {
-        if ($first_row) {
-            $first_row = false;
-            // Output header row from keys.
-            echo '<tr>';
-            foreach($row as $key => $field) {
-                echo '<th>' . htmlspecialchars($key) . '</th>';
-            }
-            echo '</tr>';
-        }
-        echo '<tr>';
-        foreach($row as $key => $field) {
-            echo '<td><a href="203.php?processes='.$comp_id.'">' . (strlen(htmlspecialchars($field))>25 ? substr(htmlspecialchars($field), 0, 25) . "..." : htmlspecialchars($field)) . '</td>';
-        }
-        echo '</tr>';
+    while($row = mysql_fetch_array($result))
+    {
+       echo "<tr>";
+       echo "<td>" . $row['Name']. "</td>";
+       echo "<td>" . $row['CPU_Usage']. "</td>";
+       echo "<td>" . $row['RAM_Free']."</td>";
+       echo "<td>" . $row['DISK_Free']. "</td>";
+       echo "<td>" . $row['Processes_Total']. "</td>";
+       $process_array = explode(',',$row['Processes_Unusual']);
+       echo "<td>";
+       foreach($process_array as $key=> $value)
+       {
+           echo $value;
+           echo "<br>";
+       }
+       echo "<a href='203.php?processes=".$comp_id."'>Click here to view all processes</a>";
+ 
+       echo "</td>";
     }
-    echo("</table>");
-    $query = "SELECT * FROM Notifications WHERE ID='".$comp_id."'";
-    $result = mysql_query_or_die($query);
-    echo("<table>");
-    $first_row = true;
-    while ($row = mysql_fetch_assoc($result)) {
-        if ($first_row) {
-            $first_row = false;
-            // Output header row from keys.
-            echo '<tr>';
-            foreach($row as $key => $field) {
-                echo '<th>' . htmlspecialchars($key) . '</th>';
-            }
-            echo '</tr>';
-        }
-        echo '<tr>';
-        foreach($row as $key => $field) {
-            echo '<td>' . htmlspecialchars($field) . '</td>';
-        }
-        echo '</tr>';
-    }
-    echo("</table>");
+    echo "</table>";
+    echo "</div>";
+    echo "</center>";
+    echo "<center>
+    <table border='1'>
+    <tr>
+    <th>Name</th>
+    <th>CPU Cores</th>
+    <th>Total RAM</th>
+    <th>Total DISK</th>
+    <th>On or Off</th>
+    </tr>";
+
     $query = "SELECT * FROM MachineInfo WHERE ID='".$comp_id."'";
     $result = mysql_query_or_die($query);
-    echo("<table>");
-    $first_row = true;
-    while ($row = mysql_fetch_assoc($result)) {
-        if ($first_row) {
-            $first_row = false;
-            // Output header row from keys.
-            echo '<tr>';
-            foreach($row as $key => $field) {
-                echo '<th>' . htmlspecialchars($key) . '</th>';
-            }
-            echo '</tr>';
-        }
-        echo '<tr>';
-        foreach($row as $key => $field) {
-            echo '<td>' . htmlspecialchars($field) . '</td>';
-        }
-        echo '</tr>';
+    while($row = mysql_fetch_array($result))
+    {
+       echo "<tr>";
+       echo "<td>" . $row['Name']. "</td>";
+       echo "<td>" . $row['CPU_Cores']. "</td>";
+       echo "<td>" . $row['RAM_Total']."</td>";
+       echo "<td>" . $row['DISK_Total']. "</td>";
+       echo "<td>" . $row['On_Off_Flag']. "</td>";
     }
-    echo("</table>");
+    echo "</table>";
+    echo "</div>";
+    echo "</center>";
     die();
   }
   echo "<center>
@@ -134,6 +195,7 @@ function mysql_query_or_die($query) {
 <style>
 table, th, td {
     border: 1px solid black;
+    text-align:center;
 }
 #CropLongTexts {
   overflow:hidden;
@@ -141,50 +203,13 @@ table, th, td {
   text-overflow:ellipsis;
   width:500px;
 }
+
+#CenterTableText {
+  text-align:center;
+}
 </style>
 </head>
 <body>
-<!--
-<center>
-<table>
-  <tr>
-    <th>Computer</th>
-    <th>Uptime</th>
-    <th>Notifications</th>
-  </tr>
-  <tr>
-    <td><a href="203.php?comp=1">203-001</a></td>
-    <td>6 hours</td>
-    <td>N/A</td>
-  </tr>
-  <tr>
-    <td><a href="200.php?comp=2">200-002</a></td>
-    <td>5 hours</td>
-    <td>Unusual process</td>
-  </tr>
-  <tr>
-    <td>200-003</td>
-    <td>6 hours</td>
-    <td>N/A</td>
-  </tr>
-  <tr>
-    <td>200-004</td>
-    <td>7 hours</td>
-    <td>Unusual process</td>
-  </tr>
-  <tr>
-    <td>200-005</td>
-    <td>0.5 hours</td>
-    <td>N/A</td>
-  </tr>
-  <tr>
-    <td><a href="203.php?comp=6">200-006</a></td>
-    <td>5 hours</td>
-    <td>Unusual process</td>
-  </tr>
-</table>
-</center>
--->
 </body>
 </html>
 

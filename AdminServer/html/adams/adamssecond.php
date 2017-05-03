@@ -5,13 +5,16 @@
   {
     header("location:./login2.html");
   }
-  print $sessionid;
+  //print $sessionid;
 ?>
 <html>
 <center>
 <style>
 form{ display: inline-block; }
 </style>
+<form action="../menu.php">
+    <input type="submit" value="Home">
+</form>
 <form action="./adamsbasement.php">
     <input type="submit" value="Basement">
 </form>
@@ -22,7 +25,7 @@ form{ display: inline-block; }
     <input type="submit" value="Logout">
 </form>
 <p></p>
-<img src="https://i.imgur.com/Nwbnfri.png" alt="Adams Hall" usemap="#Map" />
+<img src="https://i.imgur.com/Ky8rWUh.png" alt="Adams Hall" usemap="#Map" />
 <map name="Map" id="Map">
     <area alt="Room 200" title="" href="200.php" shape="poly" coords="77,90,202,90,201,215,77,215" />
 

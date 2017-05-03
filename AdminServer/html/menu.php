@@ -6,15 +6,19 @@
     header("location:./login2.html");
   }
   //print $sessionid;
-  print_r($_COOKIE);
-  print $_COOKIE["sessionid"];
+  //print_r($_COOKIE);
+  //print $_COOKIE["sessionid"];
 ?>
 
 <!DOCTYPE html>
 <html>
-<body>
+<style>
+h1 {
+	font-family: Monospace;
+}
+</style>
 <center>
-<p>Click a building to view floor plan:</p>
+<h1>Click a building to view its floor plan:</h1>
 <form action="logout.php">
   <input type="submit" value="Logout">
 </form>
@@ -23,6 +27,5 @@
     <area alt="Adams Hall" title="" href="/SystemSynq/AdminServer/html/adams/adamsfirst.php" shape="poly" coords="241,1001,287,993,291,1011,247,1026" />
 </map>
 </center>
-</body>
 </html>
 

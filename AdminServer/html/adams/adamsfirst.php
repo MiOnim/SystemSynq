@@ -5,13 +5,16 @@
   {
     header("location:../login2.html");
   }
-  print $sessionid;
+  //print $sessionid;
 ?>
 <html>
 <center>
 <style>
 form{ display: inline-block; }
 </style>
+<form action="../menu.php">
+    <input type="submit" value="Home">
+</form>
 <form action="./adamsbasement.php">
     <input type="submit" value="Basement">
 </form>
@@ -26,7 +29,7 @@ form{ display: inline-block; }
 <map name="Map" id="Map">
     <area alt="Room 200" title="" href="200.php" shape="poly" coords="77,90,202,90,201,215,77,215" />
 
-	<area alt="Room 203" title="" href="./203.php" shape="poly" coords="203,89,456,88,455,215,202,216" />
+	<area alt="Room 203" title="" href="203.php" shape="poly" coords="203,89,456,88,455,215,202,216" />
 </map>
 </center>
 </html>
