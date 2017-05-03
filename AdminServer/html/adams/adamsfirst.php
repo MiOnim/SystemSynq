@@ -3,20 +3,26 @@
   extract($_COOKIE);
   if ($sessionid==NULL) 
   {
-    header("location:./login.php");
+    header("location:../login2.html");
   }
-  print $sessionid;
+  //print $sessionid;
 ?>
 <html>
 <center>
 <style>
 form{ display: inline-block; }
 </style>
+<form action="../menu.php">
+    <input type="submit" value="Home">
+</form>
 <form action="./adamsbasement.php">
     <input type="submit" value="Basement">
 </form>
-<form action="./adamsfirst.php">
-    <input type="submit" value="1st Floor">
+<form action="./adamssecond.php">
+    <input type="submit" value="2nd Floor">
+</form>
+<form action="../logout.php">
+    <input type="submit" value="Logout">
 </form>
 <p></p>
 <img src="https://i.imgur.com/Nwbnfri.png" alt="Adams Hall" usemap="#Map" />
