@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.54, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: systemsynq_beta
+-- Host: localhost    Database: systemsynq
 -- ------------------------------------------------------
 -- Server version	5.5.54-0ubuntu0.14.04.1
 
@@ -30,7 +30,8 @@ CREATE TABLE `information` (
   `cores` varchar(3) DEFAULT NULL,
   `clock_speed` varchar(15) DEFAULT NULL,
   `ram_total` varchar(31) DEFAULT NULL,
-  `disk_total` varchar(31) DEFAULT NULL
+  `disk_total` varchar(31) DEFAULT NULL,
+  PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -59,7 +60,7 @@ CREATE TABLE `running` (
   `process` varchar(2047) DEFAULT NULL,
   `users_logged` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`row_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,7 +106,8 @@ CREATE TABLE `status` (
   `ip` varchar(255) DEFAULT NULL,
   `on_off` varchar(1) DEFAULT NULL,
   `last_shutdown` varchar(255) DEFAULT NULL,
-  `last_bootup` varchar(255) DEFAULT NULL
+  `last_bootup` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -150,4 +152,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-03 19:26:49
+-- Dump completed on 2017-05-04 19:40:12
