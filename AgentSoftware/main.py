@@ -41,6 +41,7 @@ uptime = uptime()
 ip = get_ip()
 mac = get_mac()
 processes = list_all_process()
+users_logged = num_users_loggedon()
 
 num_process = CmdWmic("os", "NumberOfProcesses").run().get_result()
 last_bootup = pretty_print_time(CmdWmic("os", "LastBootupTime").run().get_result())
@@ -57,11 +58,13 @@ print_args(name=name, ip=ip, mac=mac, windows=windows, architecture=architecture
            ram_total=ram_total, ram_free=ram_free, processes=processes,
            disk_total=disk_total, disk_free=disk_free, uptime=uptime,
            num_process=num_process, last_bootup=last_bootup,
-           last_shutdown=last_shutdown)
+           last_shutdown=last_shutdown, users_logged=users_logged)
+           
 
 #db = Db()
-#db.update_network(name, uptime, last_shutdown, "", "", "")
-#db.insert_into_hardwaresoftware(name, num_cores, clock_speed, "", cpu_usage, ram_total, ram_free, disk_total, disk_free, processes)
+#db.update_status(name, ip, 'Y', last_bootup, last_shutdown)
+#db.update_information(name, windows, architecture, mac, num_cores, clock_speed, ram_total, disk_total)
+#db.insert_into_running(name, cpu_usage, ram_free, disk_free, processes, users_logged)
 
 end=time.time()
 print end-start
