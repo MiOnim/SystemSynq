@@ -1,3 +1,11 @@
+"""
+This class provides an interface to the server Database.
+It contains all the necessary queries that will be needed by the agent.
+
+"""
+
+__author__ = "Mazharul Onim"
+
 import MySQLdb
 
 HOST = "10.22.13.191"
@@ -67,3 +75,4 @@ class Db:
     def close(self):
         self.cur.close()
         self.db.close()
+        

@@ -144,7 +144,9 @@ class EventViewer:
             ret += str(item.Type) + ","      #some of the values are of None type
             ret += pretty_print_time(str(item.TimeGenerated)) + ","
             ret += str(item.EventCode) + ","
-            ret += str(item.Message) + ","
+            #replace all the newlines in Message with a placeholder
+            #to prevent an event from spanning multiple lines
+            ret += str(item.Message).replace("\r\n", "{newline}") + ","
             ret += "\n"
         return ret
     

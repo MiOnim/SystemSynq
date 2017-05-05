@@ -16,6 +16,8 @@ start=time.time()
 
 thread_result = {}   #dictionary is thread-safe
 
+ID = 1
+
 #thread for total available memory
 thread1 = Thread(target=total_available_memory, args=(thread_result,'ram_available'))
 thread1.start()
@@ -71,4 +73,5 @@ print end-start
 
 #test = EventViewer('System',type='error').run().serialize()
 #filename = write_to_file(test, ".\\events\\")
-#upload_file_to_server(filename)
+#remote_filename = "events-" + str(ID) + ".txt"
+#upload_file_to_server(filename, remote_filename)
