@@ -7,6 +7,8 @@ __author__ = "Mazharul Onim"
 
 from datetime import datetime
 import os
+import requests
+import json
 
 def current_datetime():
     now = datetime.now()
@@ -37,4 +39,16 @@ def write_to_file(string, filepath):
     print "Writing Windows Events to file:", os.path.abspath(filepath)
     with open(filepath, 'w') as f:
         f.write(string)
+    return filepath
         
+def upload_file_to_server(filename):
+    print "Uploading file " + filename + " to server ..."
+    url = 'http://10.22.13.191/upload.php'
+    files = {'userfile': open(filename, 'rb')}
+    r = requests.post(url, files=files)
+    response = r.text
+    if 'error' in response:
+        print "File upload to Server failed"
+    elif 'success' in response:
+        print "File uploaded to server successfully"
+    

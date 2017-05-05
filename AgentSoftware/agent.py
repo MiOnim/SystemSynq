@@ -16,8 +16,6 @@ import wmi
 import socket
 from datetime import datetime
 from uuid import getnode
-from threading import Thread
-from multiprocessing.pool import ThreadPool
 from wmic import *
 from utils import *
 
@@ -30,13 +28,13 @@ def get_total_disk_space():
     total = 0
     for d in wmi_obj.Win32_LogicalDisk(DriveType=3):
         total = total + int(d.Size)
-    return "%.2f" %(total/1.073741824e9)
+    return "%.2f GB" %(total/1.073741824e9)
 
 def get_free_disk_space():
     total = 0
     for d in wmi_obj.Win32_LogicalDisk(DriveType=3):
         total = total + int(d.FreeSpace)
-    return "%.2f" %(total/1.073741824e9)
+    return "%.2f GB" %(total/1.073741824e9)
 
 def list_all_process():
     processes = ""
@@ -66,7 +64,7 @@ def cpu_usage():
 
 def threaded_cpu_usage(dict, key):
     cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
-    dict[key]=cpu_usage
+    dict[key]=cpu_usage.strip() + " %"
 
 def last_shutdown():
     last_shutdown = EventViewer('System',code='6006').run().get_time_generated(1)

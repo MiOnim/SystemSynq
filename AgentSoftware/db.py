@@ -11,30 +11,58 @@ class Db:
         self.db = MySQLdb.connect(HOST, USERNAME, PASSWORD, DATABASE)
         self.cur = self.db.cursor()
         
-    def update_network(self, id, uptime, shutdown, login, usb, user):
-        query = """ UPDATE Network
-                    SET Uptime='%s', Recent_Shutdowns='%s', Recent_Logins='%s', 
-                        USB_Devices='%s', User_Log='%s'
-                    WHERE ID='%s'
-                """ % (uptime, shutdown, login, usb, user, id)
-        print "Updating the Network table"
+    def add_new_information(self, name):
+        query = "INSERT INTO information (name) VALUES (%s)" % (name)
+        print "Inserting new computer in 'information' table"
         try:
             self.cur.execute(query)
             self.db.commit()
         except Exception, e:
-            print "Failed to update database: update_network(): %s" % e
+            print "Failed to update database: add_new_information(): %s" % e
+    
+    def update_information(self, name, os, arch, mac, cores, clock_speed, ram_total, disk_total):
+        query = """ UPDATE information 
+                    SET os='%s', arch='%s', mac='%s', cores='%s', clock_speed='%s', ram_total='%s', disk_total='%s' 
+                    WHERE name='%s'
+                """ % (os, arch, mac, cores, clock_speed, ram_total, disk_total, name)
+        print "Updating the 'information' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: update_information(): %s" % e
         
-    def insert_into_hardwaresoftware(self, name, cores, clock_speed, temp, cpu_usage, ram_total, ram_free, disk_total, disk_free, process):
-        query = """ INSERT INTO HardwareSoftware (Name, CPU_Cores, Clock_Speed, CPU_Temp, CPU_Usage,
-                                                  RAM_Total, RAM_Free, DISK_Total, DISK_Free, Processes_Total)
-                    VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')
-                """ % (name, cores, clock_speed, temp, cpu_usage, ram_total, ram_free, disk_total, disk_free, process)
-        print "Inserting into the HardwareSoftware table"
+    def add_new_status(self, name):
+        query = "INSERT INTO status (name) VALUES (%s)" % (name)
+        print "Inserting new computer in 'status' table"
         try:
             self.cur.execute(query)
             self.db.commit()
         except Exception, e:
-            print "Failed to update database: update_network(): %s" % e
+            print "Failed to update database: add_new_status(): %s" % e
+    
+    def update_status(self, name, ip, on_off, last_shutdown, last_bootup):
+        query = """ UPDATE status 
+                    SET ip='%s', on_off='%s', last_shutdown='%s', last_bootup='%s' 
+                    WHERE name='%s'
+                """ % (ip, on_off, last_shutdown, last_bootup, name)
+        print "Updating the 'status' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: update_status(): %s" % e
+        
+    def insert_into_running(self, name, cpu_usage, ram_free, disk_free, process, users_logged):
+        query = """ INSERT INTO running (name, cpu_usage, ram_free, disk_free, process, users_logged)
+                    VALUES ('%s','%s','%s','%s','%s','%s')
+                """ % (name, cpu_usage, ram_free, disk_free, process, users_logged)
+        print "Inserting into the 'running' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: insert_into_running(): %s" % e
         
     def close(self):
         self.cur.close()
