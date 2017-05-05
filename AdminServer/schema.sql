@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS `information`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `information` (
+  `id` varchar(3) NOT NULL,
   `name` varchar(31) NOT NULL,
   `os` varchar(255) DEFAULT NULL,
   `arch` varchar(15) DEFAULT NULL,
@@ -102,6 +103,7 @@ DROP TABLE IF EXISTS `status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `status` (
+  `id` varchar(3) NOT NULL,
   `name` varchar(31) NOT NULL,
   `ip` varchar(255) DEFAULT NULL,
   `on_off` varchar(1) DEFAULT NULL,
@@ -152,4 +154,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-04 19:40:12
+-- Dump completed on 2017-05-04 23:30:40
