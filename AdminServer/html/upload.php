@@ -10,6 +10,7 @@ $uploadfile = $uploaddir.basename($_FILES['userfile']['name']);
 
 if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile))
 {
+    copy($uploadfile, $uploaddir.'event-latest.txt');
     $json = array("success" => "1");
     echo json_encode($json);
     http_response_code(200);
