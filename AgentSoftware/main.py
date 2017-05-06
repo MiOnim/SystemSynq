@@ -16,7 +16,16 @@ start=time.time()
 
 thread_result = {}   #dictionary is thread-safe
 
-ID = 1
+db = Db()
+
+""" The startup commands below registers this computer in the database """
+
+hostname = get_hostname()
+ID = generate_unique_id(hostname)
+#db.add_new_information(ID, hostname)
+#db.add_new_status(ID, hostname)
+
+""" End Startup Commands """
 
 #thread for total available memory
 thread1 = Thread(target=total_available_memory, args=(thread_result,'ram_available'))
@@ -73,5 +82,5 @@ print end-start
 
 #test = EventViewer('System',type='error').run().serialize()
 #filename = write_to_file(test, ".\\events\\")
-#remote_filename = "events-" + str(ID) + ".txt"
+#remote_filename = "events-" + ID + ".txt"
 #upload_file_to_server(filename, remote_filename)
