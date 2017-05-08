@@ -16,6 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `alerts`
+--
+
+DROP TABLE IF EXISTS `alerts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alerts` (
+  `id` varchar(3) NOT NULL,
+  `alert` varchar(2047) NOT NULL,
+  `priority` varchar(7) DEFAULT NULL,
+  `alert_time` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `alerts`
+--
+
+LOCK TABLES `alerts` WRITE;
+/*!40000 ALTER TABLE `alerts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `alerts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `information`
 --
 
@@ -154,4 +178,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-04 23:30:40
+-- Dump completed on 2017-05-07 22:43:02
