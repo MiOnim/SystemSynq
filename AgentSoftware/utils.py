@@ -27,24 +27,25 @@ def print_args(**kwargs):
         print key + ':',
         print kwargs[key]
         
-def write_to_file(string, filepath):
+def write_to_file(string, filepath, filename=""):
     if not os.path.exists(filepath):
         try:
             print "Creating directory", os.path.abspath(filepath)
             os.makedirs(filepath)
         except:
             raise OSError("Failed to create directory")
-    filename = 'events_{}.txt'.format(datetime.now().strftime("%Y%m%d%H%M%S"))
+    if not filename:
+        filename = 'events_{}.txt'.format(datetime.now().strftime("%Y%m%d%H%M%S"))
     filepath = filepath + filename
     print "Writing Windows Events to file:", os.path.abspath(filepath)
     with open(filepath, 'w') as f:
         f.write(string)
     return filepath
         
-def upload_file_to_server(filename):
-    print "Uploading file " + filename + " to server ..."
+def upload_file_to_server(filename, remote_filename):
+    print "Uploading file " + filename + " to server as " + remote_filename + " ..."
     url = 'http://10.22.13.191/upload.php'
-    files = {'userfile': open(filename, 'rb')}
+    files = {'userfile': (remote_filename, open(filename, 'rb'))}
     r = requests.post(url, files=files)
     response = r.text
     if 'error' in response:

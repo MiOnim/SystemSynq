@@ -1,3 +1,11 @@
+"""
+This class provides an interface to the server Database.
+It contains all the necessary queries that will be needed by the agent.
+
+"""
+
+__author__ = "Mazharul Onim"
+
 import MySQLdb
 
 HOST = "10.22.13.191"
@@ -11,8 +19,8 @@ class Db:
         self.db = MySQLdb.connect(HOST, USERNAME, PASSWORD, DATABASE)
         self.cur = self.db.cursor()
         
-    def add_new_information(self, name):
-        query = "INSERT INTO information (name) VALUES (%s)" % (name)
+    def add_new_information(self, id, name):
+        query = "INSERT INTO information (id, name) VALUES ('%s', '%s')" % (id, name)
         print "Inserting new computer in 'information' table"
         try:
             self.cur.execute(query)
@@ -32,8 +40,8 @@ class Db:
         except Exception, e:
             print "Failed to update database: update_information(): %s" % e
         
-    def add_new_status(self, name):
-        query = "INSERT INTO status (name) VALUES (%s)" % (name)
+    def add_new_status(self, id, name):
+        query = "INSERT INTO status (id, name) VALUES ('%s', '%s')" % (id, name)
         print "Inserting new computer in 'status' table"
         try:
             self.cur.execute(query)
@@ -67,3 +75,4 @@ class Db:
     def close(self):
         self.cur.close()
         self.db.close()
+        

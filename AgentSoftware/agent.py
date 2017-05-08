@@ -100,6 +100,10 @@ def get_mac():
     mac = getnode()    #returns decimal value of the mac address
     return ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
 
+def generate_unique_id(hostname):
+    comp_num = hostname[-3:]   #computer numbers at Hofstra are stored in the last 3 digit of the hostname
+    return comp_num.strip('0') #remove leadin zeroes
+    
 
 """
 The instance variables are:
@@ -138,13 +142,17 @@ class EventViewer:
     
     def serialize(self):
         ret = "Last Updated: " + self.qtime + "\n"
+        #add the WHERE clause of the query string:
+        ret += self.get_query_string().split("WHERE")[1].strip()
         ret += "Log File,Level,Time Generated, Event ID, Message" + "\n"
         for item in self.result:
             ret += str(item.Logfile) + ","   #convert all of them to string because
             ret += str(item.Type) + ","      #some of the values are of None type
             ret += pretty_print_time(str(item.TimeGenerated)) + ","
             ret += str(item.EventCode) + ","
-            ret += str(item.Message) + ","
+            #replace all the newlines in Message with a placeholder
+            #to prevent an event from spanning multiple lines
+            ret += str(item.Message).replace("\r\n", "{newline}") + ","
             ret += "\n"
         return ret
     
