@@ -10,6 +10,10 @@ import os
 import requests
 import json
 
+ONE_KB = 1024.0
+ONE_MB = 1.048576e6
+ONE_GB = 1.073741824e9
+
 def current_datetime():
     now = datetime.now()
     return now.strftime("%Y/%m/%d %H:%M:%S")
@@ -52,4 +56,28 @@ def upload_file_to_server(filename, remote_filename):
         print "File upload to Server failed"
     elif 'success' in response:
         print "File uploaded to server successfully"
+    
+def get_kilobytes(val):
+    try:
+        int_value = int(val)
+    except ValueError:
+        return val
+    kilo = int_value/ONE_KB
+    return str(round(kilo, 3)) + " KB"
+    
+def get_megabytes(val):
+    try:
+        int_value = int(val)
+    except ValueError:
+        return val
+    mega = int_value/ONE_MB
+    return str(round(mega, 3)) + " MB"
+    
+def get_gigabytes(val):
+    try:
+        int_value = int(val)
+    except ValueError:
+        return val
+    giga = int_value/ONE_GB
+    return str(round(giga, 3)) + " GB"
     

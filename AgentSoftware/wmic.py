@@ -29,30 +29,3 @@ class CmdWmic:
     def get_result(self):
         return self.result
         
-    def get_kilobytes(self):
-        try:
-            int_value = int(self.result)
-        except ValueError:
-            return self.result
-        
-        kilo = int_value/1024.0   #added .0 to do float division
-        return str(round(kilo, 3)) + " KB"
-        
-    def get_megabytes(self):
-        try:
-            int_value = int(self.result)
-        except ValueError:
-            return self.result
-        
-        mega = int_value/1.048576e6
-        return str(round(mega, 3)) + " MB"
-        
-    def get_gigabytes(self):
-        try:
-            int_value = int(self.result)
-        except ValueError:
-            return self.result
-        
-        giga = int_value/1.073741824e9
-        return str(round(giga, 3)) + " GB"
-        

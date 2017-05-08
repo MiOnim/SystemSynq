@@ -18,8 +18,11 @@ from datetime import datetime
 from uuid import getnode
 from wmic import *
 from utils import *
+from db import *
+from limits import *
 
 wmi_obj = wmi.WMI()
+db = Db()
 
 def get_num_cores():
     return multiprocessing.cpu_count()
@@ -28,18 +31,24 @@ def get_total_disk_space():
     total = 0
     for d in wmi_obj.Win32_LogicalDisk(DriveType=3):
         total = total + int(d.Size)
-    return "%.2f GB" %(total/1.073741824e9)
+    return "%.2f GB" %(total/ONE_GB)
 
-def get_free_disk_space():
+def get_free_disk_space(alert_id):
     total = 0
     for d in wmi_obj.Win32_LogicalDisk(DriveType=3):
         total = total + int(d.FreeSpace)
-    return "%.2f GB" %(total/1.073741824e9)
+    if total < REM_DISK_SPACE_LIMIT:   ## send alert
+        alert_str = "Free Disk space below " + get_gigabytes(REM_DISK_SPACE_LIMIT)
+        db.insert_into_alerts(alert_id, alert_str, "high")
+    return "%.2f GB" %(total/ONE_GB)
 
-def list_all_process():
+def list_all_process(alert_id):
     processes = ""
     for p in wmi_obj.Win32_Process():
         processes += p.Name + ","
+    if len(processes.split(',')) < NUM_PROCESS_LIMIT:   ## send alert
+        alert_str = "Number of processes higher than " + str(NUM_PROCESS_LIMIT)
+        db.insert_into_alerts(alert_id, alert_str, "high")
     return processes[:-1]  #to remove the last comma
 
 #May not be used. Makes more sense to process on the front-end
@@ -80,7 +89,7 @@ def threaded_last_shutdown(dict, key):
     finally:
         pythoncom.CoUninitialize()
 
-def total_available_memory(dict, key):
+def total_available_memory(dict, key, alert_id):
     system_info = os.popen("systeminfo").read()
     for line in system_info.split("\n"):
         if "Available Physical Memory" in line:
@@ -88,6 +97,9 @@ def total_available_memory(dict, key):
     #extract the value and convert to GB:
     available_ram = "".join(re.findall(r'\d+,?\d+', x)).replace(',', '')
     in_gb = float(available_ram)/1024
+    if in_gb*ONE_GB < REM_FREE_RAM_LIMIT:   ## send alert
+        alert_str = "Available RAM below " + get_megabytes(REM_FREE_RAM_LIMIT)
+        db.insert_into_alerts(alert_id, alert_str, "high")
     dict[key] = str(round(in_gb, 2)) + " GB"
 
 def get_hostname():

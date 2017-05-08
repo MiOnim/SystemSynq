@@ -28,7 +28,7 @@ ID = generate_unique_id(hostname)
 """ End Startup Commands """
 
 #thread for total available memory
-thread1 = Thread(target=total_available_memory, args=(thread_result,'ram_available'))
+thread1 = Thread(target=total_available_memory, args=(thread_result,'ram_available',ID))
 thread1.start()
 
 #thread for last_shutdown time
@@ -44,14 +44,14 @@ windows = CmdWmic("os", "Caption").run().get_result()
 architecture = CmdWmic("os", "OSArchitecture").run().get_result()
 num_cores = get_num_cores()
 clock_speed = CmdWmic("cpu", "MaxClockSpeed").run().get_result()
-ram_total = CmdWmic("computersystem", "TotalPhysicalMemory").run().get_gigabytes()
-ram_free = CmdWmic("os", "FreePhysicalMemory").run().get_gigabytes()
+ram_total = get_gigabytes(CmdWmic("computersystem", "TotalPhysicalMemory").run().get_result())
+ram_free = get_gigabytes(CmdWmic("os", "FreePhysicalMemory").run().get_result())
 disk_total = get_total_disk_space()
-disk_free = get_free_disk_space()
+disk_free = get_free_disk_space(ID)
 uptime = uptime()
 ip = get_ip()
 mac = get_mac()
-processes = list_all_process()
+processes = list_all_process(ID)
 users_logged = num_users_loggedon()
 
 num_process = CmdWmic("os", "NumberOfProcesses").run().get_result()

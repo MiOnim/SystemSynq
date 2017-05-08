@@ -72,6 +72,15 @@ class Db:
         except Exception, e:
             print "Failed to update database: insert_into_running(): %s" % e
         
+    def insert_into_alerts(self, id, alert, priority):
+        query = "INSERT INTO alerts VALUES ('%s', '%s', '%s', NOW())" % (id, alert, priority)
+        print "Inserting into the 'alerts' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: insert_into_alerts(): %s" % e
+        
     def close(self):
         self.cur.close()
         self.db.close()
