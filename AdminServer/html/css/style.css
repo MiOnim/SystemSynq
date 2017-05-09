@@ -1,0 +1,69 @@
+body {
+    margin: 20px;
+    padding-left: 20px;
+}
+
+#events-form {
+    margin: 25px 0px;
+}
+
+.event-option {
+    display: inline;
+    margin-right: 15px;
+}
+
+#events-form label {
+    font-weight: bold;
+}
+
+#events-table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#events-table th {
+    border: 1px solid black;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    height: 40px;
+}
+
+#events-table td{
+    border: 1px solid black;
+    height: 30px;
+}
+
+#logfile-col {
+    width: 20px;
+    text-align: center;
+}
+
+#level-col {
+    width: 20px;
+    text-align: center;
+}
+
+#time-col {
+    width: 75px;
+    text-align: center;
+}
+
+#eventid-col {
+    width: 50px;
+    text-align: center;
+}
+
+#message-col {
+    width: 250px;
+    padding-left: 10px;
+}
+
+.show-more {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+    margin-left: 5px;
+}
+
