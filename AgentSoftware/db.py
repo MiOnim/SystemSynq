@@ -8,7 +8,7 @@ __author__ = "Mazharul Onim"
 
 import MySQLdb
 
-HOST = "10.22.13.191"
+HOST = "10.22.12.139"
 USERNAME = "agent"
 PASSWORD = "systemsynq"
 DATABASE = "systemsynq"
@@ -49,17 +49,38 @@ class Db:
         except Exception, e:
             print "Failed to update database: add_new_status(): %s" % e
     
-    def update_status(self, name, ip, on_off, last_shutdown, last_bootup):
+    def update_status(self, name, ip, last_shutdown, last_bootup):
         query = """ UPDATE status 
-                    SET ip='%s', on_off='%s', last_shutdown='%s', last_bootup='%s' 
+                    SET ip='%s', last_shutdown='%s', last_bootup='%s' 
                     WHERE name='%s'
-                """ % (ip, on_off, last_shutdown, last_bootup, name)
+                """ % (ip, last_shutdown, last_bootup, name)
         print "Updating the 'status' table"
         try:
             self.cur.execute(query)
             self.db.commit()
         except Exception, e:
             print "Failed to update database: update_status(): %s" % e
+        
+    def add_new_setting(self, id):
+        query = "INSERT INTO settings (id) VALUES ('%s')" % (id)
+        print "Inserting new computer in 'settings' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: add_new_settings(): %s" % e
+    
+    def update_setting(self, id, min_free_disk, min_free_ram, max_process):
+        query = """ UPDATE settings 
+                    SET min_free_disk='%s', min_free_ram='%s', max_process='%s' 
+                    WHERE id='%s'
+                """ % (min_free_disk, min_free_ram, max_process, id)
+        print "Updating the 'settings' table"
+        try:
+            self.cur.execute(query)
+            self.db.commit()
+        except Exception, e:
+            print "Failed to update database: update_settings(): %s" % e
         
     def insert_into_running(self, name, cpu_usage, ram_free, disk_free, process, users_logged):
         query = """ INSERT INTO running (name, cpu_usage, ram_free, disk_free, process, users_logged)
@@ -72,8 +93,10 @@ class Db:
         except Exception, e:
             print "Failed to update database: insert_into_running(): %s" % e
         
-    def insert_into_alerts(self, id, alert, priority):
-        query = "INSERT INTO alerts VALUES ('%s', '%s', '%s', NOW())" % (id, alert, priority)
+    def insert_into_alerts(self, id, name, alert, priority):
+        query = """ INSERT INTO alerts (id, name, alert, priority, alert_time)
+                    VALUES ('%s', '%s', '%s', '%s', NOW())
+                """ % (id, name, alert, priority)
         print "Inserting into the 'alerts' table"
         try:
             self.cur.execute(query)

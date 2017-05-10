@@ -14,6 +14,9 @@ ONE_KB = 1024.0
 ONE_MB = 1.048576e6
 ONE_GB = 1.073741824e9
 
+ADMIN_URL = "http://10.22.12.139"
+
+
 def current_datetime():
     now = datetime.now()
     return now.strftime("%Y/%m/%d %H:%M:%S")
@@ -48,7 +51,7 @@ def write_to_file(string, filepath, filename=""):
         
 def upload_file_to_server(filename, remote_filename):
     print "Uploading file " + filename + " to server as " + remote_filename + " ..."
-    url = 'http://10.22.13.191/upload.php'
+    url = ADMIN_URL + "/upload.php"
     files = {'userfile': (remote_filename, open(filename, 'rb'))}
     r = requests.post(url, files=files)
     response = r.text

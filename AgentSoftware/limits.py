@@ -8,6 +8,7 @@ __author__ = "Mazharul Onim"
 
 from utils import *
 
+### Initial Values:
 REM_DISK_SPACE_LIMIT = 10*ONE_GB
 REM_FREE_RAM_LIMIT = 800*ONE_MB
 NUM_PROCESS_LIMIT = 100

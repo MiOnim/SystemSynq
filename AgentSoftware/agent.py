@@ -16,7 +16,7 @@ import wmi
 import socket
 from datetime import datetime
 from uuid import getnode
-from wmic import *
+from cmd import *
 from utils import *
 from db import *
 from limits import *
@@ -33,22 +33,22 @@ def get_total_disk_space():
         total = total + int(d.Size)
     return "%.2f GB" %(total/ONE_GB)
 
-def get_free_disk_space(alert_id):
+def get_free_disk_space():
     total = 0
     for d in wmi_obj.Win32_LogicalDisk(DriveType=3):
         total = total + int(d.FreeSpace)
     if total < REM_DISK_SPACE_LIMIT:   ## send alert
         alert_str = "Free Disk space below " + get_gigabytes(REM_DISK_SPACE_LIMIT)
-        db.insert_into_alerts(alert_id, alert_str, "high")
+        db.insert_into_alerts(ID, hostname, alert_str, "high")
     return "%.2f GB" %(total/ONE_GB)
 
-def list_all_process(alert_id):
+def list_all_process():
     processes = ""
     for p in wmi_obj.Win32_Process():
         processes += p.Name + ","
-    if len(processes.split(',')) < NUM_PROCESS_LIMIT:   ## send alert
+    if len(processes.split(',')) > NUM_PROCESS_LIMIT:   ## send alert
         alert_str = "Number of processes higher than " + str(NUM_PROCESS_LIMIT)
-        db.insert_into_alerts(alert_id, alert_str, "high")
+        db.insert_into_alerts(ID, hostname, alert_str, "high")
     return processes[:-1]  #to remove the last comma
 
 #May not be used. Makes more sense to process on the front-end
@@ -73,7 +73,7 @@ def cpu_usage():
 
 def threaded_cpu_usage(dict, key):
     cpu_usage = CmdWmic("cpu", "LoadPercentage").run().get_result()
-    dict[key]=cpu_usage.strip() + " %"
+    dict[key]=cpu_usage + " %"
 
 def last_shutdown():
     last_shutdown = EventViewer('System',code='6006').run().get_time_generated(1)
@@ -89,7 +89,7 @@ def threaded_last_shutdown(dict, key):
     finally:
         pythoncom.CoUninitialize()
 
-def total_available_memory(dict, key, alert_id):
+def total_available_memory(dict, key):
     system_info = os.popen("systeminfo").read()
     for line in system_info.split("\n"):
         if "Available Physical Memory" in line:
@@ -99,7 +99,7 @@ def total_available_memory(dict, key, alert_id):
     in_gb = float(available_ram)/1024
     if in_gb*ONE_GB < REM_FREE_RAM_LIMIT:   ## send alert
         alert_str = "Available RAM below " + get_megabytes(REM_FREE_RAM_LIMIT)
-        db.insert_into_alerts(alert_id, alert_str, "high")
+        db.insert_into_alerts(ID, hostname, alert_str, "high")
     dict[key] = str(round(in_gb, 2)) + " GB"
 
 def get_hostname():
@@ -117,6 +117,11 @@ def generate_unique_id(hostname):
     return comp_num.strip('0') #remove leadin zeroes
     
 
+""" The following values are unique to this machine
+and will be used by other files """
+hostname = get_hostname()
+ID = generate_unique_id(hostname)
+    
 """
 The instance variables are:
     self.logfile   - the logfile to query from e.g. 'System', 'Application'
@@ -153,17 +158,19 @@ class EventViewer:
         return query_str
     
     def serialize(self):
-        ret = "Last Updated: " + self.qtime + "\n"
+        ret = self.qtime + "\n"
         #add the WHERE clause of the query string:
-        ret += self.get_query_string().split("WHERE")[1].strip()
+        ret += self.get_query_string().split("WHERE")[1].strip() + "\n"
         ret += "Log File,Level,Time Generated, Event ID, Message" + "\n"
         for item in self.result:
             ret += str(item.Logfile) + ","   #convert all of them to string because
             ret += str(item.Type) + ","      #some of the values are of None type
             ret += pretty_print_time(str(item.TimeGenerated)) + ","
             ret += str(item.EventCode) + ","
-            #replace all the newlines in Message with a placeholder
-            #to prevent an event from spanning multiple lines
+            """
+            replace all the newlines in Message with a placeholder
+            to prevent an event from spanning multiple lines
+            """
             ret += str(item.Message).replace("\r\n", "{newline}") + ","
             ret += "\n"
         return ret
