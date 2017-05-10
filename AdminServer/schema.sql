@@ -24,9 +24,11 @@ DROP TABLE IF EXISTS `alerts`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `alerts` (
   `id` varchar(3) NOT NULL,
+  `name` varchar(31) DEFAULT NULL,
   `alert` varchar(2047) NOT NULL,
   `priority` varchar(7) DEFAULT NULL,
-  `alert_time` datetime DEFAULT NULL
+  `alert_time` datetime DEFAULT NULL,
+  `on_off` varchar(1) NOT NULL DEFAULT 'Y'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -85,7 +87,7 @@ CREATE TABLE `running` (
   `process` varchar(2047) DEFAULT NULL,
   `users_logged` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`row_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,6 +122,31 @@ LOCK TABLES `sessions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `settings` (
+  `id` varchar(3) NOT NULL,
+  `min_free_disk` varchar(31) DEFAULT NULL,
+  `min_free_ram` varchar(31) DEFAULT NULL,
+  `max_process` varchar(3) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `settings`
+--
+
+LOCK TABLES `settings` WRITE;
+/*!40000 ALTER TABLE `settings` DISABLE KEYS */;
+/*!40000 ALTER TABLE `settings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `status`
 --
 
@@ -130,7 +157,6 @@ CREATE TABLE `status` (
   `id` varchar(3) NOT NULL,
   `name` varchar(31) NOT NULL,
   `ip` varchar(255) DEFAULT NULL,
-  `on_off` varchar(1) DEFAULT NULL,
   `last_shutdown` varchar(255) DEFAULT NULL,
   `last_bootup` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`name`)
@@ -178,4 +204,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-07 22:43:02
+-- Dump completed on 2017-05-10 19:27:03
