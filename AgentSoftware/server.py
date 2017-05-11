@@ -11,6 +11,7 @@ __author__ = "Mazharul Onim"
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from urlparse import urlparse
 import json
+import time
 from agent import *
 from utils import *
 #from main import *
@@ -20,6 +21,8 @@ PORT = 80
 class MyHandler(BaseHTTPRequestHandler):
     
     def do_GET(self):
+        success = False
+        start_time = time.time()  # measures how long the GET request takes
         try:
             query = urlparse(self.path).query
             params = dict(qc.split("=") for qc in query.split("&"))
@@ -28,26 +31,32 @@ class MyHandler(BaseHTTPRequestHandler):
             else:
                 if params['refresh'] == 'events':
                     rv = self.refresh_events(params)
-                    if not rv:
+                    if rv is False:
                         self.error_response("Invalid Events query")
                     else:
-                        self.success_response()
+                        success = True
                 elif params['refresh'] == 'database':
                     #main_run()
-                    self.success_response()
+                    success = True
                 else:
                     print "Invalid param for 'refresh'"
                     self.error_response("Invalid request. SyntaxError")
         except Exception, e:
             print "An Exception occured in GET request: '%s'" % e
             self.error_response("Invalid request. SyntaxError")
+        if success:
+            # 'rv' stores the number of events
+            end_time = time.time()
+            time_taken = end_time - start_time
+            message = "%d events found in %.2f seconds" % (rv, time_taken)
+            self.success_response(message)
         return
     
-    def success_response(self):
+    def success_response(self, message='1'):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        response = json.dumps({"success": "1"})
+        response = json.dumps({"success": message})
         print "response sent: " + response
         self.wfile.write(response)
     
@@ -72,7 +81,7 @@ class MyHandler(BaseHTTPRequestHandler):
             filename = write_to_file(logs, ".\\events\\")
             remote_filename = "events-" + ID + ".txt"
             upload_file_to_server(filename, remote_filename)
-            return True
+            return event.get_num_events()
 
 
 
