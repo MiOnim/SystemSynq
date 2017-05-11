@@ -1,7 +1,37 @@
 <?php
-    if (empty($_GET) || is_null($_GET['events'])) {
-        header('Location: ../menu.php');
+/**
+   This file displays Windows Event log for a computer. It also allows users
+   to query the Windows Event log for more specific events.
+
+   @author Mazharul Onim
+ */
+
+    if (empty($_GET) || (!$_GET['events'] && !$_GET['query'])) {
+        header('Location: ./203.php');
     }
+    if (isset($_POST['query'])) {
+        $request_str = "http://10.22.13.174/?refresh=events";
+        $request_str .= "&logfile=".$_POST['logfile'];
+        if (isset($_POST['evttype'])) {
+            $request_str .= "&evttype=".$_POST['evttype'];
+        }
+        if (isset($_POST['eventid'])) {
+            $request_str .= "&eventid=".$_POST['eventid'];
+        }
+        $response = file_get_contents($request_str);
+        if (!$response) {
+            $query_msg = "<b style='color:red;'>Query failed: Invalid query input.</b>";
+        }
+        else {
+            $response = json_decode($response, true);
+            $query_msg = "<b style='color:green;'>Query successful: ".$response["success"]."</b>";
+        }
+        //header('Location: ./203-adv.php?events='.$_GET['query']);
+    }
+
+    if (isset($_GET['events'])) {
+        $comp_id = $_GET['events'];
+        $filename = "./../../event-uploads/events-".$comp_id.".txt";
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,10 +55,10 @@
         <p>
             <em>Use the form below to query the Windows Event Viewer.</em>
         </p>
-        <form action="" method="GET" id="events-form">
+        <form action="" method="post" id="events-form">
             <div class="event-option">
                 <label>LogFile:</label>
-                <select>
+                <select name="logfile">
                     <option selected>System</option>
                     <option>Application</option>
                     <option>Security</option>
@@ -36,7 +66,7 @@
             </div>
             <div class="event-option">
                 <label>Type:</label>
-                <select>
+                <select name="evttype">
                     <option disabled selected>Choose here</option>
                     <option>Information</option>
                     <option>Warning</option>
@@ -45,15 +75,29 @@
             </div>
             <div class="event-option">
                 <label>EventID:</label>
-                <input type="text" />
+                <input type="text" name="eventid" />
             </div>
             <div class="event-option">
-                <input type="submit" />
+                <button type="submit" name="query" value="<?php echo $comp_id; ?>">Query</button>
             </div>
         </form>
+        <p>
+            <?php echo $query_msg; ?>
+        </p>
         <hr />
 
 <?php
+    //isset($_GET['events']):
+        if (file_exists($filename)) {
+            $file = file("./../../event-uploads/events-".$comp_id.".txt");
+            table_header();
+            print_next_rows();
+            table_footer();
+        } else {
+            echo "<b>No Events found for this computer.</b>";
+        }
+    } // isset($_GET['events'])
+
     function table_header() {
         global $file;
         $last_updated = $file[0];
@@ -112,24 +156,25 @@
             <td id="level-col"><?php echo $row[1]; ?></td>
             <td id="time-col"><?php echo $row[2]; ?></td>
             <td id="eventid-col"><?php echo $row[3]; ?></td>
-            <td id="message-col"><?php echo substr($message,0,70)."<span style='display:none;'>".substr($message,70)."</span> <span onclick=toggleDisplay(this) class='show-more'>[more]</span>"; ?></td>
+<?php
+        if (strlen($message) > 70) {
+        //display part of the message with a 'show more' link
+?>
+            <td id="message-col"><?php echo substr($message,0,70)."<span style='display:none;'>".substr($message,70)."</span> 
+                     <span onclick=toggleDisplay(this) class='show-more'>[more]</span>"; ?></td>
+<?php
+        } else {
+        //display the entire message at once
+?>
+            <td id="message-col"><?php echo $message; ?></td>
+<?php
+        } // put message in table
+?>
         </tr>
 <?php
         }
     } //print_next_rows
 
-    if (isset($_GET['events'])) {
-        $comp_id = $_GET['events'];
-        $filename = "./../../event-uploads/events-".$comp_id.".txt";
-        if (file_exists($filename)) {
-            $file = file("./../../event-uploads/events-".$comp_id.".txt");
-            table_header();
-            print_next_rows();
-            table_footer();
-        } else {
-            echo "<b>No Events found for this computer.</b>";
-        }
-    }
 ?>
     </body>
 </html>
