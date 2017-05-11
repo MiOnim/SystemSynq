@@ -82,10 +82,10 @@ class Db:
         except Exception, e:
             print "Failed to update database: update_settings(): %s" % e
         
-    def insert_into_running(self, name, cpu_usage, ram_free, disk_free, process, users_logged):
-        query = """ INSERT INTO running (name, cpu_usage, ram_free, disk_free, process, users_logged)
-                    VALUES ('%s','%s','%s','%s','%s','%s')
-                """ % (name, cpu_usage, ram_free, disk_free, process, users_logged)
+    def insert_into_running(self, name, id, cpu_usage, ram_free, disk_free, process, users_logged):
+        query = """ INSERT INTO running (name, comp_id, cpu_usage, ram_free, disk_free, process, users_logged)
+                    VALUES ('%s','%s','%s','%s','%s','%s','%s')
+                """ % (name, id, cpu_usage, ram_free, disk_free, process, users_logged)
         print "Inserting into the 'running' table"
         try:
             self.cur.execute(query)

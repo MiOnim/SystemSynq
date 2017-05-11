@@ -66,7 +66,7 @@ def main_run():
     
     db.update_status(hostname, ip, last_bootup, last_shutdown)
     db.update_information(hostname, windows, architecture, mac, num_cores, clock_speed, ram_total, disk_total)
-    db.insert_into_running(hostname, cpu_usage, ram_free, disk_free, processes, users_logged)
+    db.insert_into_running(hostname, ID, cpu_usage, ram_free, disk_free, processes, users_logged)
     
     print_args(name=hostname, ip=ip, mac=mac, windows=windows, architecture=architecture,
            num_cores=num_cores, clock_speed=clock_speed, cpu_usage=cpu_usage,
