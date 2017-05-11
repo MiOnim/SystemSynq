@@ -145,7 +145,11 @@ class EventViewer:
         self.qtime = ""
     
     def run(self):
-        self.result = self.wmi.query(self.query_str)
+        print "Querying Event logs: " + self.query_str
+        try:
+            self.result = self.wmi.query(self.query_str)
+        except Exception:
+            print "WMI Query failed ..."
         self.qtime = current_datetime()
         return self
     
@@ -174,6 +178,9 @@ class EventViewer:
             ret += str(item.Message).replace("\r\n", "{newline}") + ","
             ret += "\n"
         return ret
+    
+    def get_result(self):
+        return self.result
     
     def get_message(self, n):
         return [self.result[x].Message for x in range(n)]
