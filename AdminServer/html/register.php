@@ -14,6 +14,6 @@
 	}
 	else
 	{
-		header("location:./test.php");
+		header("location:./menu.php");
 	}        
 ?>
