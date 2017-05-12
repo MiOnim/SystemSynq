@@ -6,36 +6,53 @@
    @author Mazharul Onim
  */
 
+    include "../config.php";
+
     if (empty($_GET) || (!$_GET['events'] && !$_GET['query'])) {
         header('Location: ./203.php');
-    }
-    if (isset($_POST['query'])) {
-        $request_str = "http://10.22.13.174/?refresh=events";
-        $request_str .= "&logfile=".$_POST['logfile'];
-        if (isset($_POST['evttype'])) {
-            $request_str .= "&evttype=".$_POST['evttype'];
-        }
-        if (isset($_POST['eventid'])) {
-            $request_str .= "&eventid=".$_POST['eventid'];
-        }
-        $response = file_get_contents($request_str);
-        if (!$response) {
-            $query_msg = "<b style='color:red;'>Query failed: Invalid query input.</b>";
-        }
-        else {
-            $response = json_decode($response, true);
-            $query_msg = "<b style='color:green;'>Query successful: ".$response["success"]."</b>";
-        }
-        //header('Location: ./203-adv.php?events='.$_GET['query']);
+        die();
     }
 
     if (isset($_GET['events'])) {
-        $comp_id = $_GET['events'];
+        $comp_id = htmlspecialchars($_GET['events']);
+        if (!is_numeric($comp_id)) {
+            header('Location: ./203.php');
+            die();
+        }
+
+        //query button is pressed:
+        if (isset($_POST['query'])) {
+            //first get the IP address of the computer:
+            $ip_query_str = "SELECT ip FROM status WHERE id='".$comp_id."'";
+            $ip_query = mysql_query($ip_query_str);
+            $row = mysql_fetch_assoc($ip_query);
+            $ip = $row['ip'];
+
+            //send GET request to the remote computer:
+            $request_str = "http://".$ip."/?refresh=events";
+            $request_str .= "&logfile=".$_POST['logfile'];
+            if (isset($_POST['evttype'])) {
+                $request_str .= "&evttype=".$_POST['evttype'];
+            }
+            if (isset($_POST['eventid'])) {
+                $request_str .= "&eventid=".$_POST['eventid'];
+            }
+            $response = file_get_contents($request_str);
+            if (!$response) {
+                $query_msg = "<b style='color:red;'>Query failed: Invalid query input.</b>";
+            }
+            else {
+                $response = json_decode($response, true);
+                $query_msg = "<b style='color:green;'>Query successful: ".$response["success"]."</b>";
+            }
+        } // isset($_POST['query'])
+
         $filename = "./../../event-uploads/events-".$comp_id.".txt";
 ?>
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Windows Event Viewer Query</title>
         <link rel="stylesheet" type="text/css" href="../css/style.css" />
         <script>
             function toggleDisplay(ele) {
@@ -55,7 +72,7 @@
         <p>
             <em>Use the form below to query the Windows Event Viewer.</em>
         </p>
-        <form action="" method="post" id="events-form">
+        <form action="./203-adv.php?events=<?php echo $comp_id; ?>" method="post" id="events-form">
             <div class="event-option">
                 <label>LogFile:</label>
                 <select name="logfile">
@@ -100,12 +117,19 @@
 
     function table_header() {
         global $file;
+        $len = count($file);
+        $num_events = $len - 3;
+        $page = $_GET['page'];
+        if (!$page) $page = 1;
+
         $last_updated = $file[0];
         $query_str = $file[1];
         $table_headers = explode(',', $file[2]);
 
         echo "<p><u>Last updated</u>: ".$last_updated."</p>";
         echo "<p><u>Query</u>: <b>".$query_str."</b></p>";
+        echo "<p style='color:#808080;'>Showing ".(1+($page-1)*25)." to ".
+              min($num_events, $page*25)." of ".$num_events." events</p>";
 ?>
     <table id="events-table">
         <tr>
@@ -119,13 +143,14 @@
     } // table_header()
 
     function table_footer() {
-        $id = $_GET['events'];
+        global $file;
+        global $comp_id;
+
+        $num_events = count($file)-3;
         $page = $_GET['page'];
         if (!$page) $page = 1;
-        $prev_link = $_SERVER['PHP_SELF']."?events=".$id."&page=".($page-1);
-        $next_link = $_SERVER['PHP_SELF']."?events=".$id."&page=".($page+1);
-        #$previous_link = "./test.php?events=1&page=".($page-1);
-        #$next_link = "./test.php?events=1&page=".($page+1);
+        $prev_link = $_SERVER['PHP_SELF']."?events=".$comp_id."&page=".($page-1);
+        $next_link = $_SERVER['PHP_SELF']."?events=".$comp_id."&page=".($page+1);
 ?>
         </table>
         <p style="text-align:center;">
@@ -134,19 +159,25 @@
 ?>
             <a href="<?php echo $prev_link; ?>">Previous</a>  
 <?php
-        }
+        } // display 'previous' link
+        if ($num_events > (25*$page)) {
 ?>
             <a href="<?php echo $next_link; ?>">Next</a>
+<?php
+        } // display 'next' link
+?>
         </p>
 <?php
     } // table_footer()
 
     function print_next_rows() {
         global $file;
+        $len = count($file);
+
         $page = $_GET['page'];
         if (!$page) $page = 1;
         $start = 3+25*($page-1);
-        for ($i = $start; $i < $start+25; $i++) {
+        for ($i = $start; $i < min($len, $start+25); $i++) {
             $row = explode(',', $file[$i]);
             $message = $row[4];
             $message = str_replace("{newline}", "<br>", $message);
@@ -157,24 +188,23 @@
             <td id="time-col"><?php echo $row[2]; ?></td>
             <td id="eventid-col"><?php echo $row[3]; ?></td>
 <?php
-        if (strlen($message) > 70) {
-        //display part of the message with a 'show more' link
+            if (strlen($message) > 70) {
+            //display part of the message with a 'more' link
 ?>
             <td id="message-col"><?php echo substr($message,0,70)."<span style='display:none;'>".substr($message,70)."</span> 
                      <span onclick=toggleDisplay(this) class='show-more'>[more]</span>"; ?></td>
 <?php
-        } else {
-        //display the entire message at once
+            } else {
+            //display the entire message at once
 ?>
             <td id="message-col"><?php echo $message; ?></td>
 <?php
-        } // put message in table
+            } // put message in table
 ?>
         </tr>
 <?php
-        }
+        } // for loop
     } //print_next_rows
-
 ?>
     </body>
 </html>
