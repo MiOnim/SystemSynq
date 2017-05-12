@@ -5,7 +5,7 @@ This file contains some utility functions to be used on other files
 
 __author__ = "Mazharul Onim"
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import requests
 import json
@@ -29,6 +29,18 @@ def pretty_print_time(value):
         return value
     return dt.strftime("%Y/%m/%d %H:%M:%S")
 
+def subtract_hours(time, hours):
+    """ Time has to be in this format: %Y%m%d%H%M%S """
+    time_format = "%Y%m%d%H%M%S"
+    time = time.split('.')[0]
+    try:
+        dt = datetime.strptime(time, time_format)
+    except Exception:
+        print "Error in subtract_hours(): Wrong time format"
+        return time
+    new_dt = dt - timedelta(minutes=60*hours)
+    return new_dt.strftime(time_format)
+    
 def print_args(**kwargs):
     for key in kwargs:
         print key + ':',

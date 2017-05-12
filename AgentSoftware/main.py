@@ -14,8 +14,6 @@ from db import *
 
 start=time.time()
 
-db = Db()
-
 """ The startup commands below registers this computer in the database """
 
 db.add_new_information(ID, hostname)
@@ -64,7 +62,7 @@ def main_run():
     last_shutdown = pretty_print_time(thread_result['last_shutdown'])
     ram_free = thread_result['ram_available']
     
-    db.update_status(hostname, ip, last_bootup, last_shutdown)
+    db.update_status(hostname, ip, last_shutdown, last_bootup)
     db.update_information(hostname, windows, architecture, mac, num_cores, clock_speed, ram_total, disk_total)
     db.insert_into_running(hostname, ID, cpu_usage, ram_free, disk_free, processes, users_logged)
     

@@ -132,6 +132,10 @@ The instance variables are:
     self.wmi       - the WMI object. Default value is wmi_obj instantiated on top
     self.qtime     - the time of query; to display in the UI
 
+The TimeGenerated always gives 4 hours more than the real value, which is probably
+a bug in the WMI module. To fix that, I am always subtracting 4 hours from
+TimeGenerated value.
+    
 """
 class EventViewer:
     
@@ -171,7 +175,7 @@ class EventViewer:
         for item in self.result:
             ret += str(item.Logfile) + ","   #convert all of them to string because
             ret += str(item.Type) + ","      #some of the values are of None type
-            ret += pretty_print_time(str(item.TimeGenerated)) + ","
+            ret += pretty_print_time(subtract_hours(str(item.TimeGenerated), 4)) + ","
             ret += str(item.EventCode) + ","
             """
             replace all the newlines in Message with a placeholder
@@ -187,6 +191,11 @@ class EventViewer:
     def get_result(self):
         return self.result
     
+    def get_query_string(self):
+        return self.query_str
+        
+    """ The following functions return the last 'n' entries """
+    
     def get_message(self, n):
         return [self.result[x].Message for x in range(n)]
     
@@ -200,7 +209,4 @@ class EventViewer:
         return [self.result[x].EventCode for x in range(n)]
     
     def get_time_generated(self, n):
-        return [self.result[x].TimeGenerated for x in range(n)]
-    
-    def get_query_string(self):
-        return self.query_str
+        return [subtract_hours(self.result[x].TimeGenerated, 4) for x in range(n)]
