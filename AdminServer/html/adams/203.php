@@ -261,7 +261,7 @@ function date_difference($first,$second)
     }
     echo "</table>";
     echo "</div>";
-    //echo "</center>";
+    echo "<a href='./203-adv.php?events=".$comp_id."'>Event Viewer</a>";
     echo "<br><hr>";
     echo "<img src='https://i.imgur.com/Ribeov8.png' />";
     echo "</center>";
@@ -279,7 +279,6 @@ function date_difference($first,$second)
   </tr>";
   $noteconnection = mysql_connect('10.22.12.139','root','systemsynq17');
   mysql_select_db('systemsynq');
-  //$query = "SELECT DISTINCT id FROM alerts";
   $query = "SELECT DISTINCT name,id,priority,on_off FROM alerts";
   $result = mysql_query_or_die($query);
   while($row = mysql_fetch_assoc($result))
@@ -288,73 +287,17 @@ function date_difference($first,$second)
      echo "<tr>";
      echo "<td>".$row['name']."</td>";
      echo "<td><a href='203.php?comp=".$row['id']."'>".$row['id']."</a></td>";
-     //echo "<td>".$row['alert']."</td>";
      echo "<td>";
-     $alert_query = "SELECT alert FROM alerts WHERE id ='".$id."'";
+     $alert_query = "SELECT DISTINCT alert FROM alerts WHERE id ='".$id."'";
      $alert_result = mysql_query($alert_query);
      while($alert_row = mysql_fetch_array($alert_result))
      {
           echo $alert_row['alert']."<br>";
      }
-     //echo $row['alert'];
      echo "</td>";
      echo "<td>".$row['priority']."</td>";
      echo "<td>".$row['on_off']."</td>";
   }
-  /*$result = mysql_query_or_die($query);
-  print $result;
-  $num_rows = mysql_num_rows($result);
-  $unique_computers = mysql_fetch_assoc($result);
-  for ($i=0;$i<$num_rows;$i++)
-  {
-        $query = "SELECT * FROM alerts WHERE id='".$unique_computers[$i]."'";
-        $result = mysql_query_or_die($query);
-  	while ($rows = mysql_fetch_array($result))
- 	{
-            print $rows;
-     	    echo "<td><a href='203.php?comp=".$row['id']."'>".$row['id']."</a></td>";
-	    $alert_array = explode(',',$row['alert']);
-            echo "<td>";
-            $counter = 0;
-            foreach($alert_array as $key=> $value)
-            {
-                echo $value;
-                echo "<br>";
-	        $counter += 1;
-                if ($counter >=2)
-                {
-                    break;
-                }
-            }
-     	    //echo "<td>".$row['alert']."</td>";
-      	    //echo "<td>".$row['priority']."</td>";
- 	}
-  }*/
-  /*
-  while($row = mysql_fetch_array($result))
-  {
-     //echo "<td><a href='203.php?comp=".$row['id']."'>".$row['id']."</a></td>";
-     //echo "<td>".$row['alert']."</td>";
-     echo "<tr>";
-     echo "<td><a href='203.php?comp=".$row['id']."'>".$row['id']."</a></td>";
-     $notif_array = explode(',',$row['alert']);
-     echo "<td>";
-     if (count($notif_array) >= 2)
-     {
-         foreach(array_slice($notif_array,0,2) as $item)
-         {
-             echo $item."<br>";
-         }
-         echo "<a href='203.php?notifications=".$row['ID']."'>Click to view all notifications</a></td>";
-     }
-     else 
-     {
-         echo $row['alert'];
-     }
-     //echo "<td>" . (strlen($row['Notifications']) > 25 ? substr($row['Notifications'],0,25)."..." : $row['Notifications']) . "<br>"; 
-     //echo "<a href='203.php?notifications=".$row['ID']."'>Click to view all notifications</a>";
-     echo "<td>" . $row['priority']. "</td>";
-  }*/
   echo "</table>";
   echo "</div>";
   echo "</center>";
