@@ -5,9 +5,6 @@
   {
     header("location:./login2.html");
   }
-  //print $sessionid;
-  //print_r($_COOKIE);
-  //print $_COOKIE["sessionid"];
 ?>
 
 <!DOCTYPE html>

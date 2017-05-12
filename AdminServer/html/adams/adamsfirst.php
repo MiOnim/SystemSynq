@@ -25,7 +25,7 @@ form{ display: inline-block; }
     <input type="submit" value="Logout">
 </form>
 <p></p>
-<img src="https://i.imgur.com/Nwbnfri.png" alt="Adams Hall" usemap="#Map" />
+<img src="https://i.imgur.com/2U81XcN.png" alt="Adams Hall" usemap="#Map" />
 <map name="Map" id="Map">
     <area alt="Room 200" title="" href="200.php" shape="poly" coords="77,90,202,90,201,215,77,215" />
 
