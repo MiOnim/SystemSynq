@@ -21,9 +21,10 @@ form{ display: inline-block; }
 <html>
 <head>
 <style>
+
 table{
     border-collapse: collapse;
-    width: 100%
+    width: 100%;
 }
 th,td {
     text-align: left;
@@ -36,12 +37,6 @@ th {
     color: white;
 }
 
-#CropLongTexts {
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  width:500px;
-}
 
 #CenterTableText {
   text-align:center;
@@ -138,13 +133,17 @@ function date_difference($first,$second)
     $notif_id = $_GET['notifications'];
     $connection = mysql_connect('10.22.12.139','root','systemsynq17');
     mysql_select_db('systemsynq');
-    $query = "SELECT * FROM alerts WHERE ID='" . $notif_id."'";
+    $query = "SELECT DISTINCT id, alert, alert_time FROM alerts WHERE ID='" . $notif_id."'ORDER BY alert_time DESC";
     $result = mysql_query_or_die($query);
+    echo "<table>";
+    echo "<tr>";
+    echo "<th>Name</th>";
+    echo "<th>Notifications</th>";
+    echo "<th>Alert Time</th>";
+    echo "</tr>";
     while($row = mysql_fetch_array($result))
     {
-      echo "<b>Name: </b><br>";
-      echo "Adams-20300".$row['id']."<br><br>";
-      echo "<b>Notifications: </b><br>";
+      echo "<tr><td>Adams-20300".$row['id']."</td>";
       $notification_array = explode(',',$row['alert']);
       //print_r($notification_array);
       echo "<td>";
@@ -153,13 +152,17 @@ function date_difference($first,$second)
           echo $item;
           echo "<br>";
       }
+      echo "</td>";
+      echo "<td>".$row['alert_time']."</td></tr>";
     }
+    echo "</table>";
     die(); 
   } 
 
   // comp?=ID
   if (isset($_GET['comp'])) {
     $comp_id = $_GET['comp'];
+    echo "<center><form action='' method='post'><input type='submit' value = 'Refresh'></form></center>";
     $connection = mysql_connect('10.22.12.139','root','systemsynq17');
     mysql_select_db('systemsynq');
     echo "<center>
@@ -261,18 +264,16 @@ function date_difference($first,$second)
     }
     echo "</table>";
     echo "</div>";
-    echo "<a href='./203-adv.php?events=".$comp_id."'>Event Viewer</a>";
+    echo "<a href='./203-adv.php?events=".$comp_id."'><font style='impact' size='4'>Event Viewer</font></a>";
     echo "<br><hr>";
     echo "<img src='https://i.imgur.com/Ribeov8.png' />";
     echo "</center>";
     die();
   }
   echo "<center>
-  <div id = CropLongTexts>
-  <table border='1'>
+  <table width='100%' border='1'>
   <tr>
   <th>Name</th>
-  <th>ID</th>
   <th>Alert</th>
   <th>Priority</th>
   <th>On/Off</th>
@@ -285,21 +286,29 @@ function date_difference($first,$second)
   {
      $id = $row['id'];
      echo "<tr>";
-     echo "<td>".$row['name']."</td>";
-     echo "<td><a href='203.php?comp=".$row['id']."'>".$row['id']."</a></td>";
+     //echo "<td>".$row['name']."</td>";
+     echo "<td><a href='203.php?comp=".$row['id']."'>".$row['name']."</a></td>";
      echo "<td>";
      $alert_query = "SELECT DISTINCT alert FROM alerts WHERE id ='".$id."'";
      $alert_result = mysql_query($alert_query);
      while($alert_row = mysql_fetch_array($alert_result))
      {
-          echo $alert_row['alert']."<br>";
+          echo "<font style='color:#FF0000';>".$alert_row['alert']."</font><br>";
      }
+     echo "<a href='203.php?notifications=".$row['id']."'>Click here to view all alerts</a>";
      echo "</td>";
      echo "<td>".$row['priority']."</td>";
-     echo "<td>".$row['on_off']."</td>";
+     //echo "<td>".$row['on_off']." ";
+     if ($row['on_off'] == 'Y')
+     {
+          echo "<td><img src='http://i.imgur.com/EPBh97O.png' style='width:25px;height:25px;'></td>";
+     }
+     else 
+     {
+          echo "<td><img src='http://i.imgur.com/HsgUVy3.png' style='width:25px;height:25px;'></td>";
+     }
   }
   echo "</table>";
-  echo "</div>";
   echo "</center>";
   mysql_close($noteconnection);
 ?>
