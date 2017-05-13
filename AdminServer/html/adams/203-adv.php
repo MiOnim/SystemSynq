@@ -1,9 +1,9 @@
 <?php
 /**
-   This file displays Windows Event log for a computer. It also allows users
-   to query the Windows Event log for more specific events.
-
-   @author Mazharul Onim
+ * This file displays Windows Event log for a computer. It also allows users
+ * to query the Windows Event log for more specific events.
+ *
+ * @author Mazharul Onim
  */
 
     include "../config.php";
