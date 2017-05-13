@@ -1,5 +1,5 @@
 """
-This file collects the necessary data and sends over to the server
+This file collects the relevant data and sends over to the server
 
 """
 
@@ -12,17 +12,9 @@ from agent import *
 from utils import *
 from db import *
 
-start=time.time()
-
-""" The startup commands below registers this computer in the database """
-
-db.add_new_information(ID, hostname)
-db.add_new_status(ID, hostname)
-db.add_new_setting(ID)
-
-""" End Startup Commands """
 
 def main_run():
+    start=time.time()   #for timing the script
     
     thread_result = {}   #dictionary is thread-safe
     
@@ -73,25 +65,18 @@ def main_run():
            num_process=num_process, last_bootup=last_bootup,
            last_shutdown=last_shutdown, users_logged=users_logged)
 
-
+    end=time.time()
+    print "Time taken by main_run(): " + str(end-start)
 
 #while True:           
 #    main_run()
 #    time.sleep(5*60)
 
-main_run()
 
-
-
-#db = Db()
-#db.update_status(hostname, ip, last_bootup, last_shutdown)
-#db.update_information(hostname, windows, architecture, mac, num_cores, clock_speed, ram_total, disk_total)
-#db.insert_into_running(hostname, cpu_usage, ram_free, disk_free, processes, users_logged)
-
-end=time.time()
-print end-start
-
-#test = EventViewer('System',type='error').run().serialize()
-#filename = write_to_file(test, ".\\events\\")
-#remote_filename = "events-" + ID + ".txt"
-#upload_file_to_server(filename, remote_filename)
+if __name__ == "__main__":
+    """ The startup commands below registers this computer in the database """
+    db.add_new_information(ID, hostname)
+    db.add_new_status(ID, hostname)
+    db.add_new_setting(ID)
+    """ End Startup Commands """
+    main_run()

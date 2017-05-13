@@ -14,14 +14,16 @@ import json
 import time
 from agent import *
 from utils import *
-#from main import *
+from main import *
 
 PORT = 80
 
 class MyHandler(BaseHTTPRequestHandler):
     
     def do_GET(self):
-        success = False
+        success_events = False   # whether GET Request for refreshing events is successful
+        success_database = False # whether GET Request for refreshing database is successful
+        
         start_time = time.time()  # measures how long the GET request takes
         try:
             query = urlparse(self.path).query
@@ -34,22 +36,24 @@ class MyHandler(BaseHTTPRequestHandler):
                     if rv is False:
                         self.error_response("Invalid Events query")
                     else:
-                        success = True
+                        success_events = True
                 elif params['refresh'] == 'database':
-                    #main_run()
-                    success = True
+                    main_run()
+                    success_database = True
                 else:
                     print "Invalid param for 'refresh'"
                     self.error_response("Invalid request. SyntaxError")
         except Exception, e:
             print "An Exception occured in GET request: '%s'" % e
             self.error_response("Invalid request. SyntaxError")
-        if success:
+        if success_events:
             # 'rv' stores the number of events
             end_time = time.time()
             time_taken = end_time - start_time
             message = "%d events found in %.2f seconds" % (rv, time_taken)
             self.success_response(message)
+        elif success_database:
+            self.success_response()
         return
     
     def success_response(self, message='1'):
