@@ -46,14 +46,16 @@ class MyHandler(BaseHTTPRequestHandler):
         except Exception, e:
             print "An Exception occured in GET request: '%s'" % e
             self.error_response("Invalid request. SyntaxError")
+        ## request successful. Send response:
+        end_time = time.time()
+        time_taken = end_time - start_time
         if success_events:
             # 'rv' stores the number of events
-            end_time = time.time()
-            time_taken = end_time - start_time
             message = "%d events found in %.2f seconds" % (rv, time_taken)
             self.success_response(message)
         elif success_database:
-            self.success_response()
+            message = "(%.2f seconds taken)" % (time_taken)
+            self.success_response(message)
         return
     
     def success_response(self, message='1'):
