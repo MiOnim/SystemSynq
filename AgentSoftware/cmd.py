@@ -14,16 +14,30 @@ The instance variables are:
     self.cmd    - the command string to be executed
     self.result - the result of the command
     
+Only commands that are in the class variable 'WHITELIST' can be run
+
 """
 class Cmd:
 
+    WHITELIST = ["cd", "comp", "copy", "date", "dir",  "echo", "find", "findstr",
+                 "hostname", "ipconfig", "mkdir", "more", "nslookup", "ping",
+                 "robocopy", "time", "tracert", "wmic"]
+    
     def __init__(self, cmd):
         self.cmd = cmd
         self.result = ""
         
     def run(self):
-        res = os.popen(self.cmd).read()
-        self.result = res.replace("\n", "{newline}")
+        if self.cmd.split(" ")[0] not in Cmd.WHITELIST:
+            # command can be 'malicious' or 'not found'
+            print "Command '" + self.cmd + "' is not allowed"
+            self.result = "command not allowed"
+        else:
+            print "Running windows command: '" + self.cmd + "'"
+            process = os.popen(self.cmd)
+            res = process.read()
+            process.close()
+            self.result = res.replace("\n", "{newline}")
         return self
         
     def get_result(self):
