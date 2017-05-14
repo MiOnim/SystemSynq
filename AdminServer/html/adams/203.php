@@ -288,6 +288,8 @@ function date_difference($first,$second)
     echo "</table>";
     echo "</div>";
     echo "<a href='./203-adv.php?events=".$comp_id."'><font style='impact' size='4'>Event Viewer</font></a>";
+    echo "&nbsp&nbsp&nbsp";
+    echo "<a href='./203-adv.php?runc=".$comp_id."'><font style='impact' size='4'>Command Prompt</font></a>";
     echo "<br><hr>";
     echo "<img src='https://i.imgur.com/Ribeov8.png' />";
     echo "</center>";
