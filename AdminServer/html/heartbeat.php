@@ -21,7 +21,9 @@
     //it should keep on checking the status of the computers:
     while (true) {
         foreach ($ips as $id=>$ip) {
-            system("ping -c2 -W2 ".$ip." > /dev/null", $retval);
+            system("ping -c2 -W1 ".$ip." > /dev/null", $retval);
+            //$retval stores the status code of the system call
+            //$ertval = 0 if host is up, and a non-zero number if host is down
             $on_off = $retval ? 'N' : 'Y';
             update_database($id, $on_off);
         }
@@ -29,7 +31,10 @@
 
     function update_database($id, $on_off) {
         $query = "UPDATE alerts SET on_off='".$on_off."' WHERE id='".$id."'";
-        mysql_query($query);
+        $res = mysql_query($query);
+        if (!$res) {
+            die("Query: '".$query."' failed. ".mysql_error());
+        }
     }
 ?>
 

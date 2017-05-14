@@ -159,10 +159,33 @@ function date_difference($first,$second)
     die(); 
   } 
 
+  // refresh the database by sending a GET request to the agent computer
+  if (isset($_POST['refresh'])) {
+    include "../config.php";
+    $comp_id = $_GET['comp'];
+    $ip_query_str = "SELECT ip FROM status WHERE id='".$comp_id."'";
+    $ip_query = mysql_query($ip_query_str);
+    $row = mysql_fetch_assoc($ip_query);
+    $ip = $row['ip'];
+
+    //send GET request to the remote computer:
+    $request_str = "http://".$ip."/?refresh=database";
+    $response = file_get_contents($request_str);
+    if (!$response) {
+        $message = "<b style='color:red;'>Refresh failed.</b>";
+    }
+    else {
+        $response = json_decode($response, true);
+        $message = "<b style='color:green;'>Refresh successful ".$response["success"].".</b>";
+    }
+    
+  }
+
   // comp?=ID
   if (isset($_GET['comp'])) {
     $comp_id = $_GET['comp'];
-    echo "<center><form action='' method='post'><input type='submit' value = 'Refresh'></form></center>";
+    echo "<center><form action='' method='post'><input type='submit' name='refresh' value='Refresh'></form></center>";
+    echo "<center>".$message."</center><br>";
     $connection = mysql_connect('10.22.12.139','root','systemsynq17');
     mysql_select_db('systemsynq');
     echo "<center>
@@ -203,7 +226,7 @@ function date_difference($first,$second)
     <table border='1'>
     <tr>
     <th>CPU Usage</th>
-    <th>Free RAM</th>
+    <th>Available RAM</th>
     <th>Free DISK</th>
     <th>Processes</th>
     <th>Users Logged In</th>
