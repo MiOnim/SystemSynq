@@ -13,6 +13,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from urlparse import urlparse
 import json
 import time
+import urllib
 from agent import *
 from utils import *
 from cmd import *
@@ -36,7 +37,8 @@ class MyHandler(BaseHTTPRequestHandler):
             else:
                 # .get() returns 'None' if not found in the dictionary
                 refresh = params.get('refresh')
-                cmd = params.get('cmd')
+                # urldecode the cmd string
+                cmd = urllib.unquote_plus(params.get('cmd'))
                 if refresh == 'events':
                     rv = self.refresh_events(params)
                     if rv is False:
