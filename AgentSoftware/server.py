@@ -37,8 +37,7 @@ class MyHandler(BaseHTTPRequestHandler):
             else:
                 # .get() returns 'None' if not found in the dictionary
                 refresh = params.get('refresh')
-                # urldecode the cmd string
-                cmd = urllib.unquote_plus(params.get('cmd'))
+                cmd = params.get('cmd')
                 if refresh == 'events':
                     rv = self.refresh_events(params)
                     if rv is False:
@@ -49,6 +48,8 @@ class MyHandler(BaseHTTPRequestHandler):
                     main_run()
                     success_database = True
                 elif cmd:
+                    # urldecode the cmd string
+                    cmd = urllib.unquote_plus(cmd)
                     cmd_obj = Cmd(cmd).run()
                     cmd_result = cmd_obj.get_result()
                     success_cmd = True
