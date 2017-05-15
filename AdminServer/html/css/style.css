@@ -3,13 +3,30 @@ body {
     padding-left: 20px;
 }
 
+#menu-buttons {
+    float:right;
+}
+
+#menu-buttons form {
+    display: inline-block;
+    margin-right: 5px;
+}
+
 #events-form {
     margin: 25px 0px;
 }
 
-.event-option {
+.form-part {
     display: inline;
     margin-right: 15px;
+}
+
+.form-part input, select {
+    width: 200px;
+}
+
+.form-part button {
+    width: 75px;
 }
 
 #events-form label {
@@ -65,5 +82,36 @@ body {
     text-decoration: underline;
     color: blue;
     margin-left: 5px;
+}
+
+.left-side {
+    float: left;
+    padding-right: 20px;
+    width: 45%;
+    border-right: 1px solid blue;
+}
+
+.right-side {
+    float: left;
+    padding-left: 20px;
+    width: 45%;
+    border-left: 1px solid blue;
+    margin-left: -1px;
+}
+
+.output-label {
+    font-weight: bold;
+    float: left;
+}
+
+.command-output {
+    float: left;
+    border: 1px solid blue;
+    padding: 5px;
+    margin-left: 10px;
+    min-width: 50px;
+    min-height: 10px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
